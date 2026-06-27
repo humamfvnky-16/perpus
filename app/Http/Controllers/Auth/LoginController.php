@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
+
+class LoginController extends Controller
+{
+    public function show() { return view('auth.login'); }
+
+    public function login(Request $r)
+    {
+        $creds = $r->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt($creds, $r->boolean('remember'))) {
+            throw ValidationException::withMessages(['email' => 'Email atau password salah.']);
+        }
+        $r->session()->regenerate();
+        $r->user()->forceFill([
+            'last_login_at' => now(),
+            'last_login_ip' => $r->ip(),
+        ])->save();
+
+        return redirect()->intended(route('dashboard'));
+    }
+
+    public function logout(Request $r)
+    {
+        Auth::logout();
+        $r->session()->invalidate();
+        $r->session()->regenerateToken();
+        return redirect('/');
+    }
+
+    public function forgot() { return view('auth.forgot'); }
+
+    public function sendResetLink(Request $r)
+    {
+        $r->validate(['email' => 'required|email']);
+        $status = Password::sendResetLink($r->only('email'));
+        return back()->with('status', __($status));
+    }
+
+    public function showReset($token) { return view('auth.reset', ['token' => $token]); }
+
+    public function reset(Request $r)
+    {
+        $r->validate([
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|confirmed|min:8',
+        ]);
+        $status = Password::reset(
+            $r->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill(['password' => bcrypt($password)])->save();
+            }
+        );
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    }
+}

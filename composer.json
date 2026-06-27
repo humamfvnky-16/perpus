@@ -1,0 +1,45 @@
+{
+    "name": "library/digital-library",
+    "type": "project",
+    "description": "Aplikasi Perpustakaan Digital Berbasis Web (Laravel 11).",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.0",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
+        "milon/barcode": "^11.0",
+        "pragmarx/google2fa-laravel": "^2.2",
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/laravel-activitylog": "^4.8",
+        "spatie/laravel-backup": "^9.0",
+        "spatie/laravel-permission": "^6.4"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "laravel/pint": "^1.13",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^11.0",
+        "spatie/laravel-ignition": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": { "psr-4": { "Tests\\": "tests/" } },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ]
+    },
+    "config": { "optimize-autoloader": true, "preferred-install": "dist", "sort-packages": true },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
