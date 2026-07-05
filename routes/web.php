@@ -12,6 +12,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\StudentLoginController;
+use App\Http\Controllers\Auth\TeacherLoginController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\CatalogController;
@@ -60,6 +61,9 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login/siswa',  [StudentLoginController::class, 'show'])->name('login.siswa');
     Route::post('/login/siswa', [StudentLoginController::class, 'login'])->middleware('throttle:login');
+
+    Route::get('/login/guru',  [TeacherLoginController::class, 'show'])->name('login.guru');
+    Route::post('/login/guru', [TeacherLoginController::class, 'login'])->middleware('throttle:login');
 
     Route::get('/register', [RegisterController::class, 'show'])->name('register');
     Route::post('/register',[RegisterController::class, 'register'])->middleware('throttle:6,1');
