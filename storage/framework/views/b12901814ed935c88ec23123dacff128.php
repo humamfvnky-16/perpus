@@ -1,8 +1,7 @@
-@extends('layouts.app')
-@section('title', config('app.name'))
-@section('content')
+<?php $__env->startSection('title', config('app.name')); ?>
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
-    {{-- Header publik --}}
+    
     <header class="bg-gradient-to-r from-primary-600 to-primary-800 text-white sticky top-0 z-30 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3">
@@ -11,30 +10,30 @@
                 </div>
                 <div>
                     <p class="font-bold text-lg leading-tight">Garage Library</p>
-                    <p class="text-xs opacity-90">{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+                    <p class="text-xs opacity-90"><?php echo e(\Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y')); ?></p>
                 </div>
             </a>
             <nav class="hidden md:flex items-center gap-6 text-sm">
                 <a href="/" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-home"></i> Beranda</a>
-                <a href="{{ route('catalog.index') }}" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-compass"></i> Katalog</a>
+                <a href="<?php echo e(route('catalog.index')); ?>" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-compass"></i> Katalog</a>
                 <a href="#spots" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-location-dot"></i> Lokasi</a>
                 <a href="#fitur" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-star"></i> Fitur</a>
             </nav>
             <div class="flex items-center gap-2">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="btn-accent">
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('dashboard')); ?>" class="btn-accent">
                         <i class="fas fa-gauge-high"></i> Dashboard
                     </a>
-                @else
-                    <a href="{{ route('login') }}" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100">
+                <?php else: ?>
+                    <a href="<?php echo e(route('login')); ?>" class="bg-white text-primary-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-slate-100">
                         <i class="fas fa-right-to-bracket"></i> Masuk
                     </a>
-                @endauth
+                <?php endif; ?>
             </div>
         </div>
     </header>
 
-    {{-- Hero --}}
+    
     <section class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
         <div class="container mx-auto px-4 py-16 md:py-24">
             <div class="grid md:grid-cols-2 gap-8 items-center">
@@ -51,58 +50,58 @@
                         dan sistem multi-titik baca untuk sekolah, komunitas, dan perpustakaan umum.
                     </p>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('catalog.index') }}" class="btn-accent shadow-lg">
+                        <a href="<?php echo e(route('catalog.index')); ?>" class="btn-accent shadow-lg">
                             <i class="fas fa-compass"></i> Jelajahi Katalog
                         </a>
-                        @guest
-                        <a href="{{ route('register') }}" class="btn-secondary !bg-white/10 !text-white !border-white/30 hover:!bg-white/20">
+                        <?php if(auth()->guard()->guest()): ?>
+                        <a href="<?php echo e(route('register')); ?>" class="btn-secondary !bg-white/10 !text-white !border-white/30 hover:!bg-white/20">
                             <i class="fas fa-user-plus"></i> Daftar Anggota
                         </a>
-                        @endguest
+                        <?php endif; ?>
                     </div>
 
-                    {{-- Stats hero --}}
-                    @php
+                    
+                    <?php
                         $heroStats = [
                             ['icon'=>'fa-book',         'count'=>\App\Models\Book::count() + \App\Models\OfflineBook::count(), 'label'=>'Koleksi'],
                             ['icon'=>'fa-users',        'count'=>\App\Models\Member::count(),  'label'=>'Anggota'],
                             ['icon'=>'fa-map-location-dot', 'count'=>\App\Models\ReadingSpot::count(), 'label'=>'Spot Baca'],
                         ];
-                    @endphp
+                    ?>
                     <div class="grid grid-cols-3 gap-3 mt-10 max-w-md">
-                        @foreach($heroStats as $s)
+                        <?php $__currentLoopData = $heroStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
-                            <i class="fas {{ $s['icon'] }} text-amber-300 mb-1"></i>
-                            <p class="text-2xl font-bold">{{ number_format($s['count']) }}</p>
-                            <p class="text-xs opacity-80">{{ $s['label'] }}</p>
+                            <i class="fas <?php echo e($s['icon']); ?> text-amber-300 mb-1"></i>
+                            <p class="text-2xl font-bold"><?php echo e(number_format($s['count'])); ?></p>
+                            <p class="text-xs opacity-80"><?php echo e($s['label']); ?></p>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
 
-                {{-- Stack buku ilustrasi --}}
+                
                 <div class="hidden md:flex justify-center">
                     <div class="relative">
-                        @php
+                        <?php
                             $featured = \App\Models\Book::orderByDesc('borrow_count')->take(4)->get();
-                        @endphp
+                        ?>
                         <div class="grid grid-cols-2 gap-4 transform rotate-3">
-                            @forelse($featured as $b)
-                                <div class="aspect-[3/4] w-32 md:w-40 rounded-lg shadow-2xl bg-gradient-to-br from-white to-slate-200 text-primary-700 flex flex-col items-center justify-center p-3 text-center {{ $loop->even ? 'mt-8' : '' }}">
-                                    @if($b->cover)
-                                        <img src="{{ asset('storage/'.$b->cover) }}" class="w-full h-full object-cover rounded-lg">
-                                    @else
+                            <?php $__empty_1 = true; $__currentLoopData = $featured; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <div class="aspect-[3/4] w-32 md:w-40 rounded-lg shadow-2xl bg-gradient-to-br from-white to-slate-200 text-primary-700 flex flex-col items-center justify-center p-3 text-center <?php echo e($loop->even ? 'mt-8' : ''); ?>">
+                                    <?php if($b->cover): ?>
+                                        <img src="<?php echo e(asset('storage/'.$b->cover)); ?>" class="w-full h-full object-cover rounded-lg">
+                                    <?php else: ?>
                                         <i class="fas fa-book text-3xl mb-2"></i>
-                                        <p class="text-xs font-semibold line-clamp-2">{{ $b->title }}</p>
-                                    @endif
+                                        <p class="text-xs font-semibold line-clamp-2"><?php echo e($b->title); ?></p>
+                                    <?php endif; ?>
                                 </div>
-                            @empty
-                                @for($i=0; $i<4; $i++)
-                                    <div class="aspect-[3/4] w-32 md:w-40 rounded-lg shadow-2xl bg-white/20 backdrop-blur flex items-center justify-center {{ $i % 2 === 1 ? 'mt-8' : '' }}">
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <?php for($i=0; $i<4; $i++): ?>
+                                    <div class="aspect-[3/4] w-32 md:w-40 rounded-lg shadow-2xl bg-white/20 backdrop-blur flex items-center justify-center <?php echo e($i % 2 === 1 ? 'mt-8' : ''); ?>">
                                         <i class="fas fa-book text-4xl opacity-50"></i>
                                     </div>
-                                @endfor
-                            @endforelse
+                                <?php endfor; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -110,33 +109,45 @@
         </div>
     </section>
 
-    {{-- Katalog Buku Digital --}}
-    @php
+    
+    <?php
         $digitalBooks = \App\Models\Book::with(['authors', 'publisher', 'ebooks'])->latest()->take(10)->get();
         $digitalCount = \App\Models\Book::count();
-    @endphp
+    ?>
     <section class="container mx-auto px-4 pt-12">
-        <x-book-carousel
-            title="Katalog Buku Digital"
-            icon="fa-tablet-screen-button"
-            :count="$digitalCount"
-            :books="$digitalBooks"
-            :view-all-route="route('catalog.index')"
-            accent="primary"
-        />
+        <?php if (isset($component)) { $__componentOriginalf4408039b681c72609b22988ca8602a9 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalf4408039b681c72609b22988ca8602a9 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.book-carousel','data' => ['title' => 'Katalog Buku Digital','icon' => 'fa-tablet-screen-button','count' => $digitalCount,'books' => $digitalBooks,'viewAllRoute' => route('catalog.index'),'accent' => 'primary']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('book-carousel'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Katalog Buku Digital','icon' => 'fa-tablet-screen-button','count' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($digitalCount),'books' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($digitalBooks),'view-all-route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('catalog.index')),'accent' => 'primary']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalf4408039b681c72609b22988ca8602a9)): ?>
+<?php $attributes = $__attributesOriginalf4408039b681c72609b22988ca8602a9; ?>
+<?php unset($__attributesOriginalf4408039b681c72609b22988ca8602a9); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalf4408039b681c72609b22988ca8602a9)): ?>
+<?php $component = $__componentOriginalf4408039b681c72609b22988ca8602a9; ?>
+<?php unset($__componentOriginalf4408039b681c72609b22988ca8602a9); ?>
+<?php endif; ?>
     </section>
 
-    {{-- Fitur Lokasi / GPS --}}
-    @php
+    
+    <?php
         $spotsGeo = \App\Models\ReadingSpot::active()
             ->whereNotNull('latitude')->whereNotNull('longitude')
             ->get(['id', 'name', 'city', 'latitude', 'longitude']);
-    @endphp
+    ?>
     <section class="container mx-auto px-4" x-data="{
             state: 'idle',
             error: null,
             result: null,
-            spots: {{ $spotsGeo->toJson() }},
+            spots: <?php echo e($spotsGeo->toJson()); ?>,
             locate() {
                 if (!navigator.geolocation) { this.state = 'error'; this.error = 'Browser tidak mendukung geolokasi.'; return; }
                 this.state = 'loading';
@@ -206,55 +217,68 @@
         </div>
     </section>
 
-    {{-- Kategori Buku Digital --}}
-    @php
+    
+    <?php
         $catPalette = ['bg-amber-500', 'bg-emerald-500', 'bg-primary-500', 'bg-rose-500', 'bg-cyan-600', 'bg-orange-500', 'bg-fuchsia-600', 'bg-lime-600'];
         $topCategories = \App\Models\BookCategory::withCount('books')->orderByDesc('books_count')->take(8)->get();
-    @endphp
-    @if($topCategories->count())
+    ?>
+    <?php if($topCategories->count()): ?>
     <section class="container mx-auto px-4 mt-8">
         <div class="rounded-2xl bg-gradient-to-r from-primary-600 to-primary-800 p-5 md:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-white font-bold flex items-center gap-2"><i class="fas fa-list"></i> Kategori Buku Digital</h3>
-                <a href="{{ route('catalog.index') }}" class="bg-white/15 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-white/25">selengkapnya</a>
+                <a href="<?php echo e(route('catalog.index')); ?>" class="bg-white/15 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-white/25">selengkapnya</a>
             </div>
             <div class="flex flex-wrap gap-3">
-                @foreach($topCategories as $i => $cat)
-                    <a href="{{ route('catalog.index', ['category' => $cat->id]) }}"
-                       class="{{ $catPalette[$i % count($catPalette)] }} text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition">
-                        {{ $cat->name }}
+                <?php $__currentLoopData = $topCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('catalog.index', ['category' => $cat->id])); ?>"
+                       class="<?php echo e($catPalette[$i % count($catPalette)]); ?> text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition">
+                        <?php echo e($cat->name); ?>
+
                     </a>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </section>
-    @endif
+    <?php endif; ?>
 
-    {{-- Katalog Buku Fisik --}}
-    @php
+    
+    <?php
         $fisikBooks = \App\Models\OfflineBook::with(['authors', 'publisher'])->latest()->take(10)->get();
         $fisikCount = \App\Models\OfflineBook::count();
-    @endphp
-    @if($fisikCount > 0)
+    ?>
+    <?php if($fisikCount > 0): ?>
     <section class="container mx-auto px-4 mt-8">
-        <x-book-carousel
-            title="Katalog Buku Fisik"
-            icon="fa-book"
-            :count="$fisikCount"
-            :books="$fisikBooks"
-            :view-all-route="route('catalog.index')"
-            accent="teal"
-        />
+        <?php if (isset($component)) { $__componentOriginalf4408039b681c72609b22988ca8602a9 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalf4408039b681c72609b22988ca8602a9 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.book-carousel','data' => ['title' => 'Katalog Buku Fisik','icon' => 'fa-book','count' => $fisikCount,'books' => $fisikBooks,'viewAllRoute' => route('catalog.index'),'accent' => 'teal']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('book-carousel'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Katalog Buku Fisik','icon' => 'fa-book','count' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($fisikCount),'books' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($fisikBooks),'view-all-route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('catalog.index')),'accent' => 'teal']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalf4408039b681c72609b22988ca8602a9)): ?>
+<?php $attributes = $__attributesOriginalf4408039b681c72609b22988ca8602a9; ?>
+<?php unset($__attributesOriginalf4408039b681c72609b22988ca8602a9); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalf4408039b681c72609b22988ca8602a9)): ?>
+<?php $component = $__componentOriginalf4408039b681c72609b22988ca8602a9; ?>
+<?php unset($__componentOriginalf4408039b681c72609b22988ca8602a9); ?>
+<?php endif; ?>
     </section>
-    @endif
+    <?php endif; ?>
 <!--
-    {{-- Fitur --}}
+    
     <section id="fitur" class="container mx-auto px-4 py-16">
         <div class="text-center mb-12">
             <span class="text-primary-600 font-semibold text-sm uppercase tracking-wider">Fitur Unggulan</span>
             <h2 class="text-3xl md:text-4xl font-bold mt-2">Semua yang Perpustakaan Anda Butuhkan</h2>
         </div>
-        @php
+        <?php
             $features = [
                 ['icon'=>'fa-tablet-screen-button','title'=>'E-Book Reader','desc'=>'Baca PDF, EPUB, dengar audiobook langsung di browser dengan bookmark otomatis.','color'=>'primary'],
                 ['icon'=>'fa-book',               'title'=>'Buku Fisik',   'desc'=>'Kelola buku fisik dengan kode katalog, barcode, dan multi-kopi per item.','color'=>'green'],
@@ -271,23 +295,23 @@
                 'red'=>'bg-red-100 text-red-700',
                 'blue'=>'bg-blue-100 text-blue-700',
             ];
-        @endphp
+        ?>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($features as $f)
+            <?php $__currentLoopData = $features; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="card hover:shadow-hover transition">
-                <div class="h-14 w-14 rounded-xl flex items-center justify-center {{ $colorMap[$f['color']] }} mb-4">
-                    <i class="fas {{ $f['icon'] }} text-2xl"></i>
+                <div class="h-14 w-14 rounded-xl flex items-center justify-center <?php echo e($colorMap[$f['color']]); ?> mb-4">
+                    <i class="fas <?php echo e($f['icon']); ?> text-2xl"></i>
                 </div>
-                <h3 class="text-lg font-bold mb-2">{{ $f['title'] }}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{!! $f['desc'] !!}</p>
+                <h3 class="text-lg font-bold mb-2"><?php echo e($f['title']); ?></h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400"><?php echo $f['desc']; ?></p>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
 -->
-    {{-- Reading Spots --}}
-    @php $spots = \App\Models\ReadingSpot::active()->latest()->take(6)->get(); @endphp
-    @if($spots->count() > 0)
+    
+    <?php $spots = \App\Models\ReadingSpot::active()->latest()->take(6)->get(); ?>
+    <?php if($spots->count() > 0): ?>
     <section id="spots" class="bg-slate-100 dark:bg-slate-800/50 py-16">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
@@ -296,39 +320,39 @@
                 <p class="text-slate-500 mt-3 max-w-xl mx-auto">Setiap spot punya koleksi sendiri. Akses katalog spesifik atau gabungan.</p>
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($spots as $s)
+            <?php $__currentLoopData = $spots; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="card hover:shadow-hover transition">
                     <div class="flex items-start gap-3">
                         <div class="h-14 w-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-white flex items-center justify-center shadow-soft text-xl shrink-0">
-                            <i class="fas {{ $s->type === 'school' ? 'fa-school' : ($s->type === 'library' ? 'fa-book-bookmark' : 'fa-users') }}"></i>
+                            <i class="fas <?php echo e($s->type === 'school' ? 'fa-school' : ($s->type === 'library' ? 'fa-book-bookmark' : 'fa-users')); ?>"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-bold truncate">{{ $s->name }}</h3>
-                            <p class="text-xs text-slate-500"><i class="fas fa-map-pin"></i> {{ $s->city ?: '-' }}, {{ $s->province ?: '' }}</p>
-                            <span class="badge-blue mt-2">{{ ucfirst($s->type) }}</span>
+                            <h3 class="font-bold truncate"><?php echo e($s->name); ?></h3>
+                            <p class="text-xs text-slate-500"><i class="fas fa-map-pin"></i> <?php echo e($s->city ?: '-'); ?>, <?php echo e($s->province ?: ''); ?></p>
+                            <span class="badge-blue mt-2"><?php echo e(ucfirst($s->type)); ?></span>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </section>
-    @endif
+    <?php endif; ?>
 
-    {{-- CTA --}}
+    
     <section class="bg-gradient-to-r from-primary-700 to-primary-900 text-white py-16">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-3">Siap Mulai Membaca?</h2>
             <p class="opacity-90 mb-8">Daftar gratis dan dapatkan akses ke ribuan koleksi.</p>
-            @guest
-            <a href="{{ route('register') }}" class="btn-accent shadow-2xl">
+            <?php if(auth()->guard()->guest()): ?>
+            <a href="<?php echo e(route('register')); ?>" class="btn-accent shadow-2xl">
                 <i class="fas fa-user-plus"></i> Daftar Sekarang
             </a>
-            @else
-            <a href="{{ route('catalog.index') }}" class="btn-accent shadow-2xl">
+            <?php else: ?>
+            <a href="<?php echo e(route('catalog.index')); ?>" class="btn-accent shadow-2xl">
                 <i class="fas fa-compass"></i> Jelajahi Katalog
             </a>
-            @endguest
+            <?php endif; ?>
         </div>
     </section>
 
@@ -336,15 +360,17 @@
         <div class="container mx-auto px-4 flex flex-wrap justify-between gap-4 text-sm">
             <div>
                 <p class="font-bold text-white">Garage Library</p>
-                <p class="text-xs mt-1">&copy; {{ date('Y') }} Cybergarage. All rights reserved.</p>
+                <p class="text-xs mt-1">&copy; <?php echo e(date('Y')); ?> Cybergarage. All rights reserved.</p>
             </div>
             <div class="flex gap-4 text-xs">
-                <a href="{{ route('catalog.index') }}" class="hover:text-white">Katalog</a>
+                <a href="<?php echo e(route('catalog.index')); ?>" class="hover:text-white">Katalog</a>
                 <a href="#fitur" class="hover:text-white">Fitur</a>
                 <a href="#spots" class="hover:text-white">Lokasi</a>
-                @guest <a href="{{ route('register') }}" class="hover:text-white">Daftar</a> @endguest
+                <?php if(auth()->guard()->guest()): ?> <a href="<?php echo e(route('register')); ?>" class="hover:text-white">Daftar</a> <?php endif; ?>
             </div>
         </div>
     </footer>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\web\Perpus\resources\views/welcome.blade.php ENDPATH**/ ?>

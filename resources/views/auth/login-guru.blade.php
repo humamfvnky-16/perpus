@@ -5,7 +5,7 @@
     <div class="w-full max-w-md">
         <a href="/" class="flex items-center gap-2 mb-8 text-primary-600">
             <i class="fas fa-book-open-reader text-2xl"></i>
-            <span class="font-bold text-lg">PustakaDigital</span>
+            <span class="font-bold text-lg">Garage Library</span>
         </a>
 
         <h1 class="text-3xl font-bold mb-2">Login Guru</h1>

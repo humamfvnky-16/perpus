@@ -12,7 +12,6 @@ class Book extends Model
 
     protected $fillable = [
         'isbn', 'title', 'subtitle', 'publisher_id', 'book_category_id', 'shelf_id',
-        'reading_spot_id', 'ddc_category_id',
         'year_published', 'edition', 'language', 'pages', 'cover', 'images', 'synopsis',
         'keywords', 'status', 'stock', 'available', 'barcode', 'qr_code', 'location',
         'view_count', 'borrow_count', 'rating_avg', 'rating_count',
