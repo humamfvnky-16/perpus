@@ -212,7 +212,7 @@ class BookSeeder extends Seeder
                     'book_category_id' => $category?->id,
                     'shelf_id'         => $shelves->isNotEmpty() ? $shelves->random() : null,
                     'year_published'   => $data['year'],
-                    'edition'          => 'Reproduksi Domain Publik',
+                    'edition'          => 'Domain Publik',
                     'language'         => $data['language'],
                     'synopsis'         => $data['synopsis'],
                     'keywords'         => 'domain publik,klasik,'.Str::slug($data['category']),
