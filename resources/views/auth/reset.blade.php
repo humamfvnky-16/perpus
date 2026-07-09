@@ -22,7 +22,7 @@
             <p class="opacity-90 mb-8 text-lg">Buat password baru yang kuat untuk menjaga keamanan akun perpustakaan Anda.</p>
         </div>
 
-        <p class="text-xs opacity-75 relative z-10">&copy; {{ date('Y') }} PustakaDigital. {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+        <p class="text-xs opacity-75 relative z-10">&copy; {{ date('Y') }} GarageLibrary. {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
     </div>
 
     {{-- Form --}}
@@ -30,7 +30,7 @@
         <div class="w-full max-w-md">
             <a href="/" class="flex items-center gap-2 lg:hidden mb-8 text-primary-600">
                 <i class="fas fa-book-open-reader text-2xl"></i>
-                <span class="font-bold text-lg">PustakaDigital</span>
+                <span class="font-bold text-lg">GarageLibrary</span>
             </a>
 
             <h1 class="text-3xl font-bold mb-2">Reset Password</h1>

@@ -86,7 +86,7 @@
 
     {{-- Footer mini sidebar --}}
     <div class="px-5 py-3 border-t border-white/5 text-xs text-slate-500" x-show="$store.sidebar.open" x-cloak>
-        <p class="font-semibold text-slate-400">PustakaDigital v1.0</p>
+        <p class="font-semibold text-slate-400">GarageLibrary v1.0</p>
         <p>&copy; {{ date('Y') }} — All rights reserved</p>
     </div>
 </aside>
