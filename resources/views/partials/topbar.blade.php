@@ -41,6 +41,47 @@
             @endif
         </a>
 
+        {{-- Setting menu --}}
+        @can('setting.manage')
+        @php $primarySpot = \App\Models\ReadingSpot::orderBy('id')->first(); @endphp
+        <div class="relative hidden md:block" x-data="{ open: false }">
+            <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-primary-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-300 transition text-sm font-medium">
+                <i class="fas fa-gear"></i>
+                <span class="hidden lg:inline">Setting</span>
+                <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+            </button>
+            <div x-show="open" x-cloak @click.outside="open = false"
+                 x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                 class="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700 shadow-hover py-2 z-50">
+                <a href="{{ route('categories.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-tags w-4 text-primary-600"></i> Kategori
+                </a>
+                <a href="{{ route('ddc-categories.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-sitemap w-4 text-primary-600"></i> Kategori DDC
+                </a>
+                <a href="{{ route('publishers.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-building w-4 text-primary-600"></i> Penerbit
+                </a>
+                <a href="{{ route('authors.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-user-pen w-4 text-primary-600"></i> Pengarang
+                </a>
+                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+                <a href="{{ $primarySpot ? route('app-profiles.edit', $primarySpot) : route('reading-spots.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-building-columns w-4 text-primary-600"></i> Profil Instansi
+                </a>
+                <a href="{{ route('reading-spots.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-map-location-dot w-4 text-primary-600"></i> Setting Lokasi Baca
+                </a>
+                <a href="{{ route('settings.index') }}#banner" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-images w-4 text-primary-600"></i> Setting Jumlah Banner
+                </a>
+                <a href="{{ $primarySpot ? route('checkout-settings.edit', $primarySpot) : route('reading-spots.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-primary-50 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-clock w-4 text-primary-600"></i> Setting Durasi Peminjaman
+                </a>
+            </div>
+        </div>
+        @endcan
+
         {{-- User menu --}}
         <div class="relative" x-data="{ open: false }">
             <button @click="open = !open" class="flex items-center gap-2 p-1 pr-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">

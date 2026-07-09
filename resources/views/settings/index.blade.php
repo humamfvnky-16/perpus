@@ -11,7 +11,7 @@
 <form method="POST" action="{{ route('settings.update') }}" class="space-y-6">
     @csrf @method('PUT')
     @forelse($settings as $group => $items)
-        <div class="card">
+        <div class="card" id="{{ \Illuminate\Support\Str::slug($group) }}">
             <h2 class="font-bold text-lg uppercase text-sm text-primary-700 dark:text-primary-300 mb-4">{{ $group }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($items as $s)

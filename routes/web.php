@@ -322,6 +322,9 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
     Route::middleware('permission:setting.manage')->group(function () {
         Route::get('reading-spots/{readingSpot}/profile',  [\App\Http\Controllers\AppProfileController::class, 'edit'])->name('app-profiles.edit');
         Route::put('reading-spots/{readingSpot}/profile',  [\App\Http\Controllers\AppProfileController::class, 'update'])->name('app-profiles.update');
+
+        Route::get('reading-spots/{readingSpot}/checkout-setting',  [\App\Http\Controllers\CheckoutSettingController::class, 'edit'])->name('checkout-settings.edit');
+        Route::put('reading-spots/{readingSpot}/checkout-setting',  [\App\Http\Controllers\CheckoutSettingController::class, 'update'])->name('checkout-settings.update');
     });
 });
 
