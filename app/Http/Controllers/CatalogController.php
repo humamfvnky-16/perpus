@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\BookActivityLog;
 use App\Models\BookCategory;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,7 @@ class CatalogController extends Controller
     {
         $book->load(['authors','category','publisher','reviews.user','ebooks','shelf']);
         $book->increment('view_count');
+        BookActivityLog::logView($book);
         return view('catalog.show', compact('book'));
     }
 }

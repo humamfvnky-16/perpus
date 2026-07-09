@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookActivityLog;
 use App\Models\Ebook;
 use App\Models\EbookBookmark;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class EbookController extends Controller
     {
         abort_unless($this->canAccess($ebook), 403);
         $ebook->increment('view_count');
+        BookActivityLog::logRead($ebook);
         $bookmark = EbookBookmark::firstOrCreate(
             ['user_id' => auth()->id(), 'ebook_id' => $ebook->id],
             ['page' => 1]
