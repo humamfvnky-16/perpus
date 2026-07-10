@@ -71,7 +71,22 @@
             .card { @apply rounded-2xl bg-white p-6 shadow-soft ring-1 ring-slate-100 dark:bg-slate-800/80 dark:ring-slate-700 dark:backdrop-blur; }
             .card-tight { @apply rounded-2xl bg-white p-4 shadow-soft ring-1 ring-slate-100 dark:bg-slate-800/80 dark:ring-slate-700; }
             .form-input, .form-select, .form-textarea {
-                @apply block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100;
+                @apply block w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm transition-colors duration-150
+                       placeholder:text-slate-400
+                       focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-400/15
+                       disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400
+                       dark:border-slate-600 dark:bg-slate-700/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:disabled:bg-slate-800;
+            }
+            .form-select { @apply pr-10; }
+            .form-label {
+                @apply flex items-center gap-1.5 text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5;
+            }
+            .form-hint { @apply text-xs text-slate-500 dark:text-slate-400 mt-1.5; }
+            .form-section {
+                @apply rounded-2xl border border-slate-100 dark:border-slate-700 p-5;
+            }
+            .form-section-title {
+                @apply flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-primary-700 dark:text-primary-300 mb-4;
             }
             .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
             .badge-green  { @apply badge bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300; }

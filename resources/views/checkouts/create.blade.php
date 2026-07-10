@@ -8,62 +8,90 @@
     'desc'  => 'Catat peminjaman buku fisik di reading spot.',
 ])
 
-<div class="card max-w-3xl" x-data="checkoutCopyPicker()">
-    <form method="POST" action="{{ route('checkouts.store') }}">@csrf
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Anggota</label>
-                <select name="user_id" required class="form-select mt-1">
-                    <option value="">Pilih anggota...</option>
-                    @foreach($users as $u)<option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})</option>@endforeach
-                </select>
-            </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Reading Spot</label>
-                <select name="reading_spot_id" required class="form-select mt-1">
-                    <option value="">Pilih lokasi...</option>
-                    @foreach($spots as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach
-                </select>
-            </div>
-            <div class="md:col-span-2">
-                <div class="flex items-center justify-between">
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Scan / Tambah Kopi (catalog_code atau barcode)</label>
-                    <button type="button" @click="toggleCamera()" class="btn-secondary text-xs !px-3 !py-1.5">
-                        <i class="fas" :class="cameraOn ? 'fa-video-slash' : 'fa-camera'"></i>
-                        <span x-text="cameraOn ? 'Matikan Kamera' : 'Scan pakai Kamera'"></span>
-                    </button>
-                </div>
+<div class="max-w-3xl space-y-5" x-data="checkoutCopyPicker()">
+    <form method="POST" action="{{ route('checkouts.store') }}" class="space-y-5">@csrf
 
-                <div x-show="cameraOn" x-cloak class="mt-2">
-                    <div id="checkout-qr-reader" class="rounded-xl overflow-hidden bg-slate-900" style="min-height:240px"></div>
-                    <p x-show="cameraError" x-cloak class="text-xs text-red-600 mt-1"><i class="fas fa-triangle-exclamation"></i> <span x-text="cameraError"></span></p>
-                    <p x-show="cameraOn && !cameraError" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Arahkan kamera ke barcode/QR di kopi buku.</p>
+        {{-- Detail peminjam --}}
+        <div class="card form-section">
+            <h2 class="form-section-title"><i class="fas fa-user"></i> Detail Peminjam</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label"><i class="fas fa-id-card text-primary-500 text-xs"></i> Anggota</label>
+                    <select name="user_id" required class="form-select">
+                        <option value="">Pilih anggota...</option>
+                        @foreach($users as $u)<option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})</option>@endforeach
+                    </select>
                 </div>
+                <div>
+                    <label class="form-label"><i class="fas fa-map-location-dot text-primary-500 text-xs"></i> Reading Spot</label>
+                    <select name="reading_spot_id" required class="form-select">
+                        <option value="">Pilih lokasi...</option>
+                        @foreach($spots as $s)<option value="{{ $s->id }}">{{ $s->name }}</option>@endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
 
-                <div class="flex gap-2 mt-2">
-                    <input type="text" id="copy-input" placeholder="Atau tempelkan barcode/catalog code di sini..." class="form-input flex-1"
-                           @keyup.enter.prevent="lookupAndAdd($event.target.value); $event.target.value=''">
-                </div>
-                <div class="mt-2 space-y-1">
+        {{-- Pilih kopi buku --}}
+        <div class="card form-section">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="form-section-title !mb-0"><i class="fas fa-barcode"></i> Pilih Kopi Buku</h2>
+                <button type="button" @click="toggleCamera()" class="btn-secondary text-xs !px-3 !py-1.5">
+                    <i class="fas" :class="cameraOn ? 'fa-video-slash' : 'fa-camera'"></i>
+                    <span x-text="cameraOn ? 'Matikan Kamera' : 'Scan pakai Kamera'"></span>
+                </button>
+            </div>
+
+            <div x-show="cameraOn" x-cloak class="mb-3">
+                <div id="checkout-qr-reader" class="rounded-xl overflow-hidden bg-slate-900" style="min-height:240px"></div>
+                <p x-show="cameraError" x-cloak class="form-hint text-red-600 dark:text-red-400"><i class="fas fa-triangle-exclamation"></i> <span x-text="cameraError"></span></p>
+                <p x-show="cameraOn && !cameraError" class="form-hint">Arahkan kamera ke barcode/QR di kopi buku.</p>
+            </div>
+
+            <label class="form-label"><i class="fas fa-keyboard text-primary-500 text-xs"></i> Catalog Code / Barcode</label>
+            <div class="relative">
+                <i class="fas fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="copy-input" placeholder="Scan atau tempelkan barcode/catalog code, lalu Enter..." class="form-input pl-10"
+                       @keyup.enter.prevent="lookupAndAdd($event.target.value); $event.target.value=''">
+            </div>
+            <p x-show="notFound" x-cloak class="form-hint text-red-600 dark:text-red-400"><i class="fas fa-triangle-exclamation"></i> Kode tidak ditemukan.</p>
+
+            <div class="mt-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+                    Kopi Dipilih <span x-show="copies.length" class="badge-blue" x-text="copies.length"></span>
+                </p>
+                <div class="space-y-2">
                     <template x-for="c in copies" :key="c.id">
-                        <div class="flex justify-between items-center p-2 rounded-lg bg-primary-50/70 dark:bg-slate-700/40">
-                            <span class="text-sm" x-text="(c.offline_book?.title || 'Buku') + ' — ' + c.catalog_code"></span>
-                            <button type="button" @click="copies = copies.filter(x => x.id !== c.id)" class="text-red-600 text-sm px-2"><i class="fas fa-xmark"></i></button>
+                        <div class="flex justify-between items-center p-3 rounded-xl bg-primary-50/70 dark:bg-slate-700/40 ring-1 ring-primary-100 dark:ring-slate-600">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <i class="fas fa-book text-primary-600 shrink-0"></i>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold truncate" x-text="c.offline_book?.title || 'Buku'"></p>
+                                    <p class="text-xs text-slate-500 font-mono" x-text="c.catalog_code"></p>
+                                </div>
+                            </div>
+                            <button type="button" @click="copies = copies.filter(x => x.id !== c.id)" class="text-red-500 hover:text-red-700 text-sm p-1.5 shrink-0"><i class="fas fa-xmark"></i></button>
                             <input type="hidden" name="copy_ids[]" :value="c.id">
                         </div>
                     </template>
-                    <p x-show="copies.length === 0" class="text-xs text-slate-500 dark:text-slate-400 italic">Belum ada kopi dipilih.</p>
-                    <p x-show="notFound" x-cloak class="text-xs text-red-600"><i class="fas fa-triangle-exclamation"></i> Kode tidak ditemukan.</p>
+                    <div x-show="copies.length === 0" class="rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 py-6 text-center text-sm text-slate-400">
+                        <i class="fas fa-inbox mb-1 block text-lg"></i> Belum ada kopi dipilih.
+                    </div>
                 </div>
             </div>
-            <div>
-                <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Lama Pinjam (hari, default sesuai CheckoutSetting)</label>
-                <input type="number" name="days" min="1" max="30" class="form-input mt-1">
-            </div>
         </div>
-        <div class="mt-6">
-            <button class="btn-primary" :disabled="copies.length === 0" :class="{ 'opacity-50': copies.length === 0 }"><i class="fas fa-check"></i> Simpan Checkout</button>
+
+        {{-- Durasi --}}
+        <div class="card form-section">
+            <h2 class="form-section-title"><i class="fas fa-calendar-days"></i> Durasi Peminjaman</h2>
+            <label class="form-label">Lama Pinjam (hari)</label>
+            <input type="number" name="days" min="1" max="30" placeholder="Default sesuai Setting Durasi Peminjaman" class="form-input max-w-xs">
+            <p class="form-hint">Kosongkan untuk pakai durasi default reading spot ini.</p>
         </div>
+
+        <button class="btn-primary" :disabled="copies.length === 0" :class="{ 'opacity-50': copies.length === 0 }">
+            <i class="fas fa-check"></i> Simpan Checkout
+        </button>
     </form>
 </div>
 
