@@ -129,7 +129,7 @@
             accent="primary"
         />
     </section>
-
+<!--
     {{-- Fitur Lokasi / GPS --}}
     @php
         $spotsGeo = \App\Models\ReadingSpot::active()
@@ -208,7 +208,7 @@
                 <span x-text="state === 'loading' ? 'Mencari lokasi...' : 'Izinkan Lokasi'"></span>
             </button>
         </div>
-    </section>
+    </section> -->
 
     {{-- Kategori Buku Digital --}}
     @php
