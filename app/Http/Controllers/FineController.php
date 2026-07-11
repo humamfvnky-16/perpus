@@ -10,7 +10,7 @@ class FineController extends Controller
 {
     public function index(Request $r)
     {
-        $rows = Fine::with(['member.user','borrow.book'])
+        $rows = Fine::with(['user','checkout.offlineBookCopies.offlineBook'])
             ->when($r->status, fn($q) => $q->where('status', $r->status))
             ->latest()->paginate(20);
         return view('fines.index', compact('rows'));
@@ -18,16 +18,13 @@ class FineController extends Controller
 
     public function mine()
     {
-        $member = auth()->user()->member;
-        $rows = $member
-            ? $member->fines()->with('borrow.book')->latest()->paginate(20)
-            : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
+        $rows = auth()->user()->fines()->with('checkout.offlineBookCopies.offlineBook')->latest()->paginate(20);
         return view('fines.index', ['rows' => $rows]);
     }
 
     public function show(Fine $fine)
     {
-        $fine->load(['member.user','borrow.book','payments']);
+        $fine->load(['user','checkout.offlineBookCopies.offlineBook','payments']);
         return view('fines.show', compact('fine'));
     }
 

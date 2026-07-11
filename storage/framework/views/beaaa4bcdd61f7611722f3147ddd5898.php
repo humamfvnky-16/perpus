@@ -37,12 +37,9 @@
                 ],
                 'Sirkulasi' => [
                     ['route' => 'members.index',       'label' => 'Anggota',         'icon' => 'fas fa-users',          'perm' => 'member.view'],
-                    ['route' => 'borrows.index',       'label' => 'Peminjaman',      'icon' => 'fas fa-handshake',      'perm' => 'borrow.view'],
-                    ['route' => 'returns.create',      'label' => 'Pengembalian',    'icon' => 'fas fa-rotate-left',    'perm' => 'borrow.return'],
-                    ['route' => 'checkouts.index',     'label' => 'Checkout Fisik',  'icon' => 'fas fa-cart-shopping'],
+                    ['route' => 'checkouts.index',     'label' => 'Peminjaman Fisik','icon' => 'fas fa-cart-shopping'],
                     ['route' => 'holds.index',         'label' => 'Hold/Antrean',    'icon' => 'fas fa-hourglass-half'],
-                    ['route' => 'reservations.index',  'label' => 'Reservasi',       'icon' => 'fas fa-bookmark'],
-                    ['route' => 'holds.scan',           'label' => 'Scan QR Peminjaman', 'icon' => 'fas fa-qrcode', 'perm' => 'borrow.return'],
+                    ['route' => 'holds.scan',          'label' => 'Scan QR Antrean', 'icon' => 'fas fa-qrcode',         'perm' => 'checkout.manage'],
                     ['route' => 'fines.index',         'label' => 'Denda',           'icon' => 'fas fa-money-bill-wave', 'perm' => 'fine.view'],
                 ],
                 'Personal' => [

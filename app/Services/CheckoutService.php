@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BorrowingHistory;
 use App\Models\Checkout;
 use App\Models\CheckoutSetting;
+use App\Models\Fine;
 use App\Models\Hold;
 use App\Models\OfflineBookCopy;
 use App\Models\ReadingSpot;
@@ -73,13 +74,18 @@ class CheckoutService
         });
     }
 
-    /** Pengembalian buku fisik */
-    public function checkin(Checkout $checkout, ?int $staffId = null): Checkout
+    /** Pengembalian buku fisik. $condition: good|damaged|lost — memengaruhi besar denda & kondisi kopi. */
+    public function checkin(Checkout $checkout, ?int $staffId = null, string $condition = 'good', ?string $damageNotes = null): Checkout
     {
-        return DB::transaction(function () use ($checkout, $staffId) {
-            $cfg       = $this->settings($checkout->readingSpot);
-            $daysLate  = $checkout->daysLate();
-            $fine      = $daysLate > 0 ? $daysLate * $cfg->daily_fine : 0;
+        return DB::transaction(function () use ($checkout, $staffId, $condition, $damageNotes) {
+            $cfg      = $this->settings($checkout->readingSpot);
+            $daysLate = $checkout->daysLate();
+            $fine     = $daysLate > 0 ? $daysLate * $cfg->daily_fine : 0;
+            $fine    += match ($condition) {
+                'damaged' => $cfg->damage_fine,
+                'lost'    => $cfg->lost_fine,
+                default   => 0,
+            };
 
             $checkout->update([
                 'is_returned' => true,
@@ -88,8 +94,11 @@ class CheckoutService
                 'fine_amount' => $fine,
             ]);
 
-            // Catat ke borrowing_histories per buku
+            // Catat ke borrowing_histories per buku, dan tandai kondisi kopi kalau rusak/hilang
             foreach ($checkout->offlineBookCopies as $copy) {
+                if ($condition !== 'good') {
+                    $copy->update(['condition' => $condition]);
+                }
                 BorrowingHistory::create([
                     'user_id'         => $checkout->user_id,
                     'offline_book_id' => $copy->offline_book_id,
@@ -100,8 +109,32 @@ class CheckoutService
                     'fine_amount'     => $fine,
                 ]);
             }
+
+            if ($fine > 0) {
+                Fine::create([
+                    'user_id'     => $checkout->user_id,
+                    'checkout_id' => $checkout->id,
+                    'type'        => match ($condition) {
+                        'damaged' => 'damage',
+                        'lost'    => 'lost',
+                        default   => 'late',
+                    },
+                    'amount'      => $fine,
+                    'description' => $this->fineLabel($daysLate, $condition, $damageNotes),
+                ]);
+            }
+
             return $checkout;
         });
+    }
+
+    protected function fineLabel(int $daysLate, string $condition, ?string $damageNotes = null): string
+    {
+        $parts = [];
+        if ($daysLate > 0) $parts[] = "Terlambat $daysLate hari";
+        if ($condition === 'damaged') $parts[] = $damageNotes ? "Kerusakan: $damageNotes" : 'Kerusakan';
+        if ($condition === 'lost')    $parts[] = 'Kehilangan';
+        return implode(' + ', $parts) ?: 'Denda';
     }
 
     public function cancelHold(Hold $hold): Hold

@@ -63,8 +63,9 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         $this->authorize('view', $member);
-        $member->load(['user','borrows.book','fines','reservations.book']);
-        return view('members.show', compact('member'));
+        $member->load('user');
+        $checkouts = $member->checkouts()->with('offlineBookCopies.offlineBook')->latest()->take(20)->get();
+        return view('members.show', compact('member', 'checkouts'));
     }
 
     public function edit(Member $member)

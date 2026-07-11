@@ -7,7 +7,7 @@
     'title' => 'Hold / Penangguhan Buku Fisik',
     'desc'  => 'Kelola antrean penahanan buku fisik untuk anggota.',
     'actions' => [
-        ['url' => route('holds.scan'), 'label' => 'Scan QR Peminjaman', 'class' => 'btn-primary', 'icon' => 'fa-qrcode', 'can' => 'borrow.return'],
+        ['url' => route('holds.scan'), 'label' => 'Scan QR Antrean', 'class' => 'btn-primary', 'icon' => 'fa-qrcode', 'can' => 'checkout.manage'],
     ],
 ])
 
@@ -54,7 +54,7 @@
                             @if($h->code)
                             <a href="{{ route('holds.qrcode', $h) }}" class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Lihat QR"><i class="fas fa-qrcode"></i></a>
                             @endif
-                            @can('borrow.return')
+                            @can('checkout.manage')
                             <form method="POST" action="{{ route('holds.fulfill', $h) }}" class="inline">@csrf
                                 <button class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Checkout"><i class="fas fa-door-open"></i></button>
                             </form>

@@ -56,7 +56,11 @@ class CheckoutController extends Controller
 
     public function checkin(Checkout $checkout, CheckoutService $svc, Request $r)
     {
-        $svc->checkin($checkout, $r->user()->id);
+        $data = $r->validate([
+            'condition'    => 'nullable|in:good,damaged,lost',
+            'damage_notes' => 'nullable|string|max:500',
+        ]);
+        $svc->checkin($checkout, $r->user()->id, $data['condition'] ?? 'good', $data['damage_notes'] ?? null);
         $msg = $checkout->fine_amount > 0
             ? 'Pengembalian sukses. Denda: Rp '.number_format($checkout->fine_amount,0,',','.')
             : 'Pengembalian sukses tanpa denda.';

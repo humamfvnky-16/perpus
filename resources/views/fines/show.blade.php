@@ -10,7 +10,7 @@
 
 <div class="card max-w-xl">
     <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 text-sm">
-        <div><dt class="text-slate-500 dark:text-slate-400">Anggota</dt><dd class="font-medium">{{ $fine->member?->user?->name }}</dd></div>
+        <div><dt class="text-slate-500 dark:text-slate-400">Anggota</dt><dd class="font-medium">{{ $fine->user?->name }}</dd></div>
         <div><dt class="text-slate-500 dark:text-slate-400">Tipe</dt><dd class="font-medium">{{ $fine->type }}</dd></div>
         <div><dt class="text-slate-500 dark:text-slate-400">Jumlah</dt><dd class="font-medium">Rp {{ number_format($fine->amount,0,',','.') }}</dd></div>
         <div><dt class="text-slate-500 dark:text-slate-400">Dibayar</dt><dd class="font-medium">Rp {{ number_format($fine->paid_amount,0,',','.') }}</dd></div>

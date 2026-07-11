@@ -87,7 +87,7 @@
                 <div class="hidden md:flex justify-center">
                     <div class="relative">
                         <?php
-                            $featured = \App\Models\Book::orderByDesc('borrow_count')->take(4)->get();
+                            $featured = \App\Models\Book::orderByDesc('view_count')->take(4)->get();
                         ?>
                         <div class="grid grid-cols-2 gap-4 transform rotate-3">
                             <?php $__empty_1 = true; $__currentLoopData = $featured; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>

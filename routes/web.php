@@ -14,7 +14,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\StudentLoginController;
 use App\Http\Controllers\Auth\TeacherLoginController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\BorrowController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatacenterImportController;
@@ -24,8 +23,6 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
@@ -109,17 +106,7 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::delete('/{id}',         [NotificationController::class, 'destroy'])->name('destroy');
     });
 
-    // Reservasi & wishlist tersedia untuk semua role login
-    Route::resource('reservations', ReservationController::class)
-        ->only(['index', 'store', 'destroy']);
-    Route::post('reservations/{reservation}/verify',
-        [ReservationController::class, 'verify'])
-        ->middleware('permission:reservation.verify')
-        ->name('reservations.verify');
-    Route::post('reservations/{reservation}/cancel',
-        [ReservationController::class, 'cancel'])
-        ->name('reservations.cancel');
-
+    // Wishlist tersedia untuk semua role login
     Route::prefix('wishlist')->name('wishlist.')->group(function () {
         Route::get('/',                       [WishlistController::class, 'index'])->name('index');
         Route::post('/{book}/toggle',         [WishlistController::class, 'toggle'])->name('toggle');
@@ -204,27 +191,7 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::delete('ebooks/{ebook}',          [EbookController::class, 'destroy'])->name('ebooks.destroy');
     });
 
-    // Peminjaman
-    // Static-segment routes MUST come before the resource so /borrows/scan is not
-    // captured by the /borrows/{borrow} (show) wildcard.
-    Route::prefix('borrows')->name('borrows.')->group(function () {
-        Route::get('/scan',    [BorrowController::class, 'scan'])->middleware('permission:borrow.create')->name('scan');
-        Route::post('/lookup', [BorrowController::class, 'lookup'])->middleware('permission:borrow.create')->name('lookup');
-    });
-    Route::resource('borrows', BorrowController::class)->only(['index', 'create', 'store', 'show']);
-    Route::prefix('borrows')->name('borrows.')->group(function () {
-        Route::post('/{borrow}/renew',  [BorrowController::class, 'renew'])->name('renew');
-        Route::get('/{borrow}/receipt', [BorrowController::class, 'receipt'])->name('receipt');
-    });
-
-    // Pengembalian
-    Route::prefix('returns')->name('returns.')->middleware('permission:borrow.return')->group(function () {
-        Route::get('/',        [ReturnController::class, 'create'])->name('create');
-        Route::post('/',       [ReturnController::class, 'store'])->name('store');
-        Route::get('/history', [ReturnController::class, 'history'])->name('history');
-    });
-
-    // Denda & Pembayaran
+    // Denda & Pembayaran — sekarang berasal dari peminjaman fisik (Checkout), bukan lagi dari peminjaman digital.
     Route::prefix('fines')->name('fines.')->group(function () {
         Route::get('/',                          [FineController::class, 'index'])->middleware('permission:fine.view')->name('index');
         Route::get('/mine',                      [FineController::class, 'mine'])->name('mine');
@@ -318,12 +285,12 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
 
     Route::prefix('holds')->name('holds.')->group(function () {
         // Static-segment routes MUST come before any /{hold} wildcard.
-        Route::get('/scan',              [\App\Http\Controllers\HoldController::class, 'scan'])->middleware('permission:borrow.return')->name('scan');
-        Route::post('/lookup',           [\App\Http\Controllers\HoldController::class, 'lookup'])->middleware('permission:borrow.return')->name('lookup');
+        Route::get('/scan',              [\App\Http\Controllers\HoldController::class, 'scan'])->middleware('permission:checkout.manage')->name('scan');
+        Route::post('/lookup',           [\App\Http\Controllers\HoldController::class, 'lookup'])->middleware('permission:checkout.manage')->name('lookup');
         Route::get('/',                  [\App\Http\Controllers\HoldController::class, 'index'])->name('index');
         Route::post('/',                 [\App\Http\Controllers\HoldController::class, 'store'])->name('store');
         Route::get('/{hold}/qrcode',     [\App\Http\Controllers\HoldController::class, 'qrcode'])->name('qrcode');
-        Route::post('/{hold}/confirm-scan', [\App\Http\Controllers\HoldController::class, 'confirmScan'])->middleware('permission:borrow.return')->name('confirmScan');
+        Route::post('/{hold}/confirm-scan', [\App\Http\Controllers\HoldController::class, 'confirmScan'])->middleware('permission:checkout.manage')->name('confirmScan');
         Route::post('/{hold}/fulfill',   [\App\Http\Controllers\HoldController::class, 'fulfill'])->name('fulfill');
         Route::post('/{hold}/cancel',    [\App\Http\Controllers\HoldController::class, 'cancel'])->name('cancel');
     });

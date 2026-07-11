@@ -29,8 +29,6 @@ class Book extends Model
     public function readingSpot() { return $this->belongsTo(ReadingSpot::class); }
     public function authors()     { return $this->belongsToMany(Author::class, 'book_author'); }
     public function ebooks()      { return $this->hasMany(Ebook::class); }
-    public function borrows()     { return $this->hasMany(BorrowTransaction::class); }
-    public function reservations(){ return $this->hasMany(Reservation::class); }
     public function reviews()     { return $this->hasMany(Review::class)->where('is_hidden', false); }
     public function wishedBy()    { return $this->belongsToMany(User::class, 'wishlists')->withPivot('created_at'); }
 

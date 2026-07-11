@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\BookCategory;
-use App\Models\BorrowTransaction;
 use App\Models\Checkout;
 use App\Models\DdcCategory;
 use App\Models\Ebook;
@@ -17,11 +16,10 @@ use App\Models\OfflineBookCopy;
 use App\Models\Payment;
 use App\Models\Publisher;
 use App\Models\ReadingSpot;
-use App\Models\Reservation;
 use App\Models\Review;
 use App\Models\Shelf;
 use App\Models\User;
-use App\Services\BorrowService;
+use App\Services\CheckoutService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -30,20 +28,20 @@ use Illuminate\Support\Str;
 
 /**
  * Mengisi data contoh untuk SEMUA modul transaksional supaya setiap halaman
- * (peminjaman, denda, e-book, buku fisik, checkout, hold, reservasi, ulasan,
- * wishlist, notifikasi) tampil dengan data nyata. Idempotent: berhenti bila
- * data peminjaman sudah ada.
+ * (denda, e-book, buku fisik, checkout, hold, ulasan, wishlist, notifikasi)
+ * tampil dengan data nyata. Idempotent: berhenti bila data checkout sudah ada.
+ * Buku digital tidak lagi punya sistem peminjaman — hanya buku fisik yang
+ * dipinjam lewat scan/Checkout.
  */
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        if (BorrowTransaction::count() > 0) {
+        if (Checkout::count() > 0) {
             $this->command?->warn('DemoDataSeeder dilewati (data transaksi sudah ada).');
             return;
         }
 
-        $svc    = app(BorrowService::class);
         $staff  = User::role('staff')->first() ?? User::role('super_admin')->first();
         $spots  = ReadingSpot::all();
         $authors = Author::all();
@@ -52,67 +50,7 @@ class DemoDataSeeder extends Seeder
         $ddcs    = DdcCategory::all();
         $shelves = Shelf::all();
 
-        $members  = $this->ensureMembers();
-        // Buku digital tidak dibatasi stok, jadi buku manapun bisa langsung dipinjam.
-        $nextBook = function () {
-            $book = Book::inRandomOrder()->first();
-            abort_unless($book, 500, 'Tidak ada buku untuk data demo.');
-            return $book;
-        };
-
-        // ---- Peminjaman + pengembalian + denda (lewat BorrowService) ----
-        foreach ($members as $idx => $member) {
-            // 1. Dikembalikan terlambat -> menghasilkan denda
-            $tx = $svc->checkout($member, $nextBook(), $staff?->id, 7);
-            $tx->update(['borrowed_at' => now()->subDays(20), 'due_at' => now()->subDays(13)]);
-            $svc->checkin($tx->refresh(), 'good', null, $staff?->id);
-
-            // 2. Dikembalikan tepat waktu (tanpa denda)
-            $tx = $svc->checkout($member, $nextBook(), $staff?->id, 7);
-            $tx->update(['borrowed_at' => now()->subDays(5)]);
-            $svc->checkin($tx->refresh(), 'good', null, $staff?->id);
-
-            // 3. Sedang dipinjam & terlambat (masih aktif)
-            $tx = $svc->checkout($member, $nextBook(), $staff?->id, 7);
-            $tx->update(['borrowed_at' => now()->subDays(15), 'due_at' => now()->subDays(8)]);
-
-            // 4. Sedang dipinjam normal (belum jatuh tempo)
-            $svc->checkout($member, $nextBook(), $staff?->id, 7);
-
-            // Satu anggota: pengembalian rusak -> denda kerusakan
-            if ($idx === 1) {
-                $tx = $svc->checkout($member, $nextBook(), $staff?->id, 7);
-                $tx->update(['borrowed_at' => now()->subDays(10), 'due_at' => now()->subDays(3)]);
-                $svc->checkin($tx->refresh(), 'damaged', 'Sampul sobek & beberapa halaman terlipat.', $staff?->id);
-            }
-        }
-
-        // ---- Pembayaran sebagian pada satu denda (status partial) ----
-        if ($fine = Fine::where('status', 'unpaid')->first()) {
-            $half = max(1, intdiv($fine->amount, 2));
-            Payment::create([
-                'fine_id'     => $fine->id,
-                'received_by' => $staff?->id,
-                'amount'      => $half,
-                'method'      => 'cash',
-                'reference'   => 'DEMO-' . Str::upper(Str::random(6)),
-                'paid_at'     => now()->subDay(),
-            ]);
-            $fine->paid_amount += $half;
-            $fine->recomputeStatus();
-        }
-
-        // ---- Reservasi (antrean buku) ----
-        foreach ($members->take(3) as $pos => $member) {
-            Reservation::create([
-                'member_id'      => $member->id,
-                'book_id'        => $nextBook()->id,
-                'reserved_at'    => now()->subDays($pos + 1),
-                'expires_at'     => now()->addDays(2),
-                'queue_position' => $pos + 1,
-                'status'         => $pos === 0 ? 'ready' : 'pending',
-            ]);
-        }
+        $members = $this->ensureMembers();
 
         // ---- Ulasan + recalced rating ----
         $reviewTexts = [
@@ -204,48 +142,68 @@ class DemoDataSeeder extends Seeder
             }
         }
 
-        // ---- Checkout buku fisik + Hold ----
+        // ---- Checkout buku fisik + pengembalian + denda (lewat CheckoutService) ----
+        $checkoutSvc  = app(CheckoutService::class);
         $studentUsers = $members->where('type', 'student')->pluck('user')->values();
         $copyPool     = $copies->shuffle()->values();
         $cp           = 0;
+        $nextCopy     = fn () => $copyPool[$cp++ % $copyPool->count()];
+
         if ($studentUsers->isNotEmpty() && $copyPool->isNotEmpty()) {
-            $scenarios = [
-                ['returned' => true,  'days' => -10, 'due' => -3],   // selesai
-                ['returned' => false, 'days' => -2,  'due' => 5],    // aktif
-                ['returned' => false, 'days' => -9,  'due' => -2],   // aktif & terlambat
-            ];
-            foreach ($scenarios as $n => $s) {
-                $copy = $copyPool[$cp++ % $copyPool->count()];
-                $co = Checkout::create([
-                    'code'            => 'CO-' . Str::upper(Str::random(8)),
-                    'user_id'         => $studentUsers[$n % $studentUsers->count()]->id,
-                    'reading_spot_id' => $copy->reading_spot_id,
-                    'staff_id'        => $staff?->id,
-                    'start_time'      => now()->addDays($s['days']),
-                    'end_time'        => now()->addDays($s['due']),
-                    'return_time'     => $s['returned'] ? now()->addDays($s['due'] - 1) : null,
-                    'is_returned'     => $s['returned'],
-                    'fine_amount'     => $s['returned'] ? 0 : 0,
-                ]);
-                $co->offlineBookCopies()->attach($copy->id);
+            $scenarios = ['late', 'ontime', 'active_overdue', 'damaged'];
+            foreach ($scenarios as $idx => $scenario) {
+                $user = $studentUsers[$idx % $studentUsers->count()];
+                $copy = $nextCopy();
+                $spot = $spots->firstWhere('id', $copy->reading_spot_id);
+                $co   = $checkoutSvc->checkout($user, $spot, [$copy->id], $staff?->id, 7);
+
+                if ($scenario === 'late') {
+                    // 1. Dikembalikan terlambat -> menghasilkan denda keterlambatan
+                    $co->update(['start_time' => now()->subDays(20), 'end_time' => now()->subDays(13)]);
+                    $checkoutSvc->checkin($co->fresh(), $staff?->id, 'good');
+                } elseif ($scenario === 'ontime') {
+                    // 2. Dikembalikan tepat waktu (tanpa denda)
+                    $co->update(['start_time' => now()->subDays(5)]);
+                    $checkoutSvc->checkin($co->fresh(), $staff?->id, 'good');
+                } elseif ($scenario === 'active_overdue') {
+                    // 3. Sedang dipinjam & terlambat (masih aktif, belum dikembalikan)
+                    $co->update(['start_time' => now()->subDays(15), 'end_time' => now()->subDays(8)]);
+                } elseif ($scenario === 'damaged') {
+                    // 4. Pengembalian rusak -> denda kerusakan
+                    $co->update(['start_time' => now()->subDays(10), 'end_time' => now()->subDays(3)]);
+                    $checkoutSvc->checkin($co->fresh(), $staff?->id, 'damaged', 'Sampul sobek & beberapa halaman terlipat.');
+                }
             }
 
+            // 5. Sedang dipinjam normal (belum jatuh tempo)
+            $copy = $nextCopy();
+            $checkoutSvc->checkout($studentUsers->first(), $spots->firstWhere('id', $copy->reading_spot_id), [$copy->id], $staff?->id, 7);
+
             // Hold aktif
-            $copy = $copyPool[$cp++ % $copyPool->count()];
-            $hold = Hold::create([
-                'user_id'         => $studentUsers->first()->id,
-                'reading_spot_id' => $copy->reading_spot_id,
-                'hold_at'         => now()->subDay(),
-                'expires_at'      => now()->addDay(),
-                'status'          => 'active',
+            $copy = $nextCopy();
+            $hold = $checkoutSvc->placeHold($studentUsers->first(), $spots->firstWhere('id', $copy->reading_spot_id), [$copy->id]);
+            $hold->update(['code' => 'HLD-' . Str::upper(Str::random(8))]);
+        }
+
+        // ---- Pembayaran sebagian pada satu denda (status partial) ----
+        if ($fine = Fine::where('status', 'unpaid')->first()) {
+            $half = max(1, intdiv($fine->amount, 2));
+            Payment::create([
+                'fine_id'     => $fine->id,
+                'received_by' => $staff?->id,
+                'amount'      => $half,
+                'method'      => 'cash',
+                'reference'   => 'DEMO-' . Str::upper(Str::random(6)),
+                'paid_at'     => now()->subDay(),
             ]);
-            $hold->offlineBookCopies()->attach($copy->id);
+            $fine->paid_amount += $half;
+            $fine->recomputeStatus();
         }
 
         // ---- Notifikasi (database) ----
         $notes = [
             ['message' => 'Pengembalian buku Anda telah jatuh tempo. Mohon segera dikembalikan.', 'read' => false],
-            ['message' => 'Reservasi buku Anda sudah siap diambil di meja sirkulasi.',            'read' => false],
+            ['message' => 'Hold buku Anda sudah siap diambil di meja sirkulasi.',                  'read' => false],
             ['message' => 'Selamat datang di Perpustakaan Digital! Jelajahi katalog kami.',         'read' => true],
         ];
         foreach ($members->take(3) as $member) {
@@ -263,10 +221,10 @@ class DemoDataSeeder extends Seeder
             }
         }
 
-        $this->command?->info('DemoDataSeeder selesai: borrow=' . BorrowTransaction::count()
-            . ' fine=' . Fine::count() . ' ebook=' . Ebook::count()
+        $this->command?->info('DemoDataSeeder selesai: checkout=' . Checkout::count()
+            . ' hold=' . Hold::count() . ' fine=' . Fine::count() . ' ebook=' . Ebook::count()
             . ' offlineBook=' . OfflineBook::count() . ' copy=' . OfflineBookCopy::count()
-            . ' checkout=' . Checkout::count() . ' review=' . Review::count());
+            . ' review=' . Review::count());
     }
 
     /** Pastikan ada cukup anggota untuk data demo (siswa & guru). */

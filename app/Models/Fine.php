@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Fine extends Model
 {
     protected $fillable = [
-        'member_id', 'borrow_transaction_id', 'type', 'amount', 'paid_amount',
+        'user_id', 'checkout_id', 'type', 'amount', 'paid_amount',
         'status', 'due_date', 'description',
     ];
 
     protected $casts = ['due_date' => 'date'];
 
-    public function member()   { return $this->belongsTo(Member::class); }
-    public function borrow()   { return $this->belongsTo(BorrowTransaction::class, 'borrow_transaction_id'); }
+    public function user()     { return $this->belongsTo(User::class); }
+    public function checkout() { return $this->belongsTo(Checkout::class); }
     public function payments() { return $this->hasMany(Payment::class); }
 
     public function getRemainingAttribute(): int

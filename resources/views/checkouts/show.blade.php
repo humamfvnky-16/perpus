@@ -37,8 +37,20 @@
     </ul>
 
     @if(!$checkout->is_returned)
-        @can('borrow.return')
-        <form method="POST" action="{{ route('checkouts.checkin', $checkout) }}" class="mt-6">@csrf
+        @can('checkout.manage')
+        <form method="POST" action="{{ route('checkouts.checkin', $checkout) }}" class="mt-6 space-y-3">@csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Kondisi</label>
+                    <select name="condition" class="form-select mt-1">
+                        <option value="good">Baik</option><option value="damaged">Rusak</option><option value="lost">Hilang</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Catatan Kerusakan</label>
+                    <input name="damage_notes" class="form-input mt-1">
+                </div>
+            </div>
             <button class="btn-primary"><i class="fas fa-right-from-bracket"></i> Proses Pengembalian</button>
         </form>
         @endcan

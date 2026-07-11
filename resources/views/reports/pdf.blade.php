@@ -14,7 +14,7 @@
 <p>Dicetak: {{ now()->format('d M Y H:i') }}</p>
 <table><thead><tr><th>#</th><th>Detail</th><th>Info</th></tr></thead><tbody>
 @foreach($rows as $i => $r)
-<tr><td>{{ $i+1 }}</td><td>{{ $r->title ?? $r->book?->title }}</td><td>{{ $r->borrow_count ?? ($r->due_at?->format('d M Y') ?? '') }}</td></tr>
+<tr><td>{{ $i+1 }}</td><td>{{ $r->title ?? $r->offlineBookCopies?->pluck('offlineBook.title')->join(', ') }}</td><td>{{ $r->view_count ?? ($r->end_time?->format('d M Y') ?? '') }}</td></tr>
 @endforeach
 </tbody></table>
 </body></html>

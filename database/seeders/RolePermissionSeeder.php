@@ -14,8 +14,7 @@ class RolePermissionSeeder extends Seeder
             'book.view','book.create','book.update','book.delete','book.import','book.export',
             'ebook.view','ebook.upload','ebook.read','ebook.download','ebook.manage',
             'member.view','member.create','member.update','member.delete',
-            'borrow.create','borrow.return','borrow.renew','borrow.view',
-            'reservation.create','reservation.cancel','reservation.verify',
+            'checkout.create','checkout.manage','checkout.view',
             'fine.view','fine.create','fine.waive','payment.record',
             'review.create','review.moderate',
             'report.view','report.export',
@@ -34,14 +33,14 @@ class RolePermissionSeeder extends Seeder
             ['user.manage','setting.manage','backup.run'])->get());
         $staff->syncPermissions([
             'book.view','book.create','member.view','member.create',
-            'borrow.create','borrow.return','borrow.renew','borrow.view',
-            'reservation.verify','fine.view','payment.record',
+            'checkout.create','checkout.manage','checkout.view',
+            'fine.view','payment.record',
         ]);
         $teacher->syncPermissions([
-            'book.view','ebook.view','ebook.read','reservation.create','review.create',
+            'book.view','ebook.view','ebook.read','review.create',
         ]);
         $student->syncPermissions([
-            'book.view','ebook.view','ebook.read','reservation.create','review.create',
+            'book.view','ebook.view','ebook.read','review.create',
         ]);
     }
 }

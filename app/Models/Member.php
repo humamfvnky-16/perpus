@@ -24,16 +24,18 @@ class Member extends Model
         'is_active'  => 'boolean',
     ];
 
-    public function user()          { return $this->belongsTo(User::class); }
-    public function readingSpot()   { return $this->belongsTo(ReadingSpot::class); }
-    public function borrows()       { return $this->hasMany(BorrowTransaction::class); }
-    public function activeBorrows() { return $this->borrows()->where('status', 'active'); }
-    public function fines()         { return $this->hasMany(Fine::class); }
-    public function reservations()  { return $this->hasMany(Reservation::class); }
+    public function user()        { return $this->belongsTo(User::class); }
+    public function readingSpot() { return $this->belongsTo(ReadingSpot::class); }
 
-    public function getActiveBorrowCountAttribute(): int
+    // Checkout & Fine tersimpan lewat User (bukan Member) karena peminjaman fisik
+    // tidak mensyaratkan keanggotaan; relasi di bawah hanya menyamakan user_id.
+    public function checkouts()       { return $this->hasMany(Checkout::class, 'user_id', 'user_id'); }
+    public function activeCheckouts() { return $this->checkouts()->where('is_returned', false); }
+    public function fines()           { return $this->hasMany(Fine::class, 'user_id', 'user_id'); }
+
+    public function getActiveCheckoutCountAttribute(): int
     {
-        return $this->activeBorrows()->count();
+        return $this->activeCheckouts()->count();
     }
 
     public function getUnpaidFineTotalAttribute(): int
@@ -41,12 +43,5 @@ class Member extends Model
         return (int) $this->fines()
             ->whereIn('status', ['unpaid', 'partial'])
             ->sum(DB::raw('amount - paid_amount'));
-    }
-
-    public function canBorrow(): bool
-    {
-        return $this->is_active
-            && (!$this->expires_at || $this->expires_at->isFuture())
-            && $this->active_borrow_count < config('library.max_per_member', 3);
     }
 }

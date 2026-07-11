@@ -16,7 +16,7 @@
         <tbody>
         @forelse($rows as $f)
             <tr>
-                <td>{{ $f->member?->user?->name }}</td>
+                <td>{{ $f->user?->name }}</td>
                 <td>{{ $f->type }}</td>
                 <td>Rp {{ number_format($f->amount,0,',','.') }}</td>
                 <td>Rp {{ number_format($f->paid_amount,0,',','.') }}</td>

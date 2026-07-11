@@ -44,6 +44,7 @@ class User extends Authenticatable
     }
     public function holds()     { return $this->hasMany(Hold::class); }
     public function checkouts() { return $this->hasMany(Checkout::class); }
+    public function fines()     { return $this->hasMany(Fine::class); }
 
     public function scopeActive($q) { return $q->where('is_active', true); }
 }

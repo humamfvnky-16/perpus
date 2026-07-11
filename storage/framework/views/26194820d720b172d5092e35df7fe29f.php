@@ -16,12 +16,8 @@
             <div class="flex justify-between items-center"><span class="text-slate-500 dark:text-slate-400">Akses</span><span class="badge-green"><i class="fas fa-infinity"></i> Gratis &amp; tanpa batas</span></div>
         </div>
         <?php if(auth()->guard()->check()): ?>
-        <div class="mt-4 space-y-2">
+        <div class="mt-4">
             <form method="POST" action="<?php echo e(route('wishlist.toggle', $book)); ?>"><?php echo csrf_field(); ?><button class="btn-secondary w-full"><i class="fas fa-heart"></i> Wishlist</button></form>
-            <form method="POST" action="<?php echo e(route('reservations.store')); ?>"><?php echo csrf_field(); ?>
-                <input type="hidden" name="book_id" value="<?php echo e($book->id); ?>">
-                <button class="btn-primary w-full"><i class="fas fa-bookmark"></i> Reservasi</button>
-            </form>
         </div>
         <?php endif; ?>
     </div>

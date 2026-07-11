@@ -17,12 +17,8 @@
             <div class="flex justify-between items-center"><span class="text-slate-500 dark:text-slate-400">Akses</span><span class="badge-green"><i class="fas fa-infinity"></i> Gratis &amp; tanpa batas</span></div>
         </div>
         @auth
-        <div class="mt-4 space-y-2">
+        <div class="mt-4">
             <form method="POST" action="{{ route('wishlist.toggle', $book) }}">@csrf<button class="btn-secondary w-full"><i class="fas fa-heart"></i> Wishlist</button></form>
-            <form method="POST" action="{{ route('reservations.store') }}">@csrf
-                <input type="hidden" name="book_id" value="{{ $book->id }}">
-                <button class="btn-primary w-full"><i class="fas fa-bookmark"></i> Reservasi</button>
-            </form>
         </div>
         @endauth
     </div>

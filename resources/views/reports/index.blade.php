@@ -16,7 +16,7 @@
         </div>
         <ol class="list-decimal pl-5 text-sm space-y-1">
             @forelse($topBooks as $b)
-                <li>{{ $b->title }} <span class="text-slate-500 dark:text-slate-400">({{ $b->borrow_count }}x)</span></li>
+                <li>{{ $b->title }} <span class="text-slate-500 dark:text-slate-400">({{ $b->view_count }}x dilihat)</span></li>
             @empty
                 <li class="text-slate-500 list-none pl-0"><i class="fas fa-inbox"></i> Tidak ada data.</li>
             @endforelse
@@ -30,7 +30,7 @@
         </div>
         <ul class="text-sm space-y-1">
             @forelse($overdue as $t)
-                <li>{{ $t->book?->title }} — {{ $t->member?->user?->name }} <span class="badge-red">{{ $t->daysLate() }} hari</span></li>
+                <li>{{ $t->offlineBookCopies->pluck('offlineBook.title')->join(', ') }} — {{ $t->user?->name }} <span class="badge-red">{{ $t->daysLate() }} hari</span></li>
             @empty
                 <li class="text-slate-500"><i class="fas fa-inbox"></i> Tidak ada keterlambatan.</li>
             @endforelse
@@ -41,7 +41,7 @@
         <h2 class="font-bold text-lg mb-2">Anggota Aktif</h2>
         <ol class="list-decimal pl-5 text-sm space-y-1">
             @forelse($activeMembers as $m)
-                <li>{{ $m->member_no }} — {{ $m->borrows_count }} transaksi</li>
+                <li>{{ $m->member_no }} — {{ $m->checkouts_count }} transaksi</li>
             @empty
                 <li class="text-slate-500 list-none pl-0"><i class="fas fa-inbox"></i> Tidak ada data.</li>
             @endforelse

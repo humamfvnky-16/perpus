@@ -40,16 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me',      [\App\Http\Controllers\Api\AuthController::class, 'me']);
     Route::post('auth/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 
-    // Riwayat pinjaman pengguna
-    Route::get('my/borrows',   [\App\Http\Controllers\Api\BorrowApiController::class, 'myBorrows']);
-    Route::get('my/fines',     [\App\Http\Controllers\Api\BorrowApiController::class, 'myFines']);
-    Route::get('my/reservations', [\App\Http\Controllers\Api\BorrowApiController::class, 'myReservations']);
-
-    // Transaksi
-    Route::post('borrow',      [\App\Http\Controllers\Api\BorrowApiController::class, 'checkout']);
-    Route::post('return',      [\App\Http\Controllers\Api\BorrowApiController::class, 'checkin']);
-    Route::post('reservation', [\App\Http\Controllers\Api\BorrowApiController::class, 'reserve']);
-
     // Default user info (Sanctum bawaan)
     Route::get('/user', fn (Request $request) => $request->user());
 });

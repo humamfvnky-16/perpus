@@ -43,7 +43,7 @@ class HoldController extends Controller
     public function qrcode(Hold $hold)
     {
         abort_unless(
-            $hold->user_id === auth()->id() || auth()->user()->can('borrow.return'),
+            $hold->user_id === auth()->id() || auth()->user()->can('checkout.manage'),
             403
         );
         $hold->load('offlineBookCopies.offlineBook', 'readingSpot');
@@ -53,14 +53,14 @@ class HoldController extends Controller
     /** Halaman scan QR untuk petugas perpustakaan. */
     public function scan()
     {
-        abort_unless(auth()->user()->can('borrow.return'), 403);
+        abort_unless(auth()->user()->can('checkout.manage'), 403);
         return view('holds.scan');
     }
 
     /** Dipanggil oleh halaman scan (kamera atau input manual) untuk mencari hold berdasarkan kode QR. */
     public function lookup(Request $r)
     {
-        abort_unless(auth()->user()->can('borrow.return'), 403);
+        abort_unless(auth()->user()->can('checkout.manage'), 403);
         $data = $r->validate(['code' => 'required|string']);
 
         $hold = Hold::with(['user', 'readingSpot', 'offlineBookCopies.offlineBook'])
@@ -91,7 +91,7 @@ class HoldController extends Controller
      */
     public function confirmScan(Hold $hold, CheckoutService $svc)
     {
-        abort_unless(auth()->user()->can('borrow.return'), 403);
+        abort_unless(auth()->user()->can('checkout.manage'), 403);
         abort_if($hold->status !== 'active', 422, 'Hold ini sudah tidak aktif.');
 
         $checkout = $svc->fulfillHold($hold, auth()->id());
@@ -111,7 +111,7 @@ class HoldController extends Controller
 
     public function cancel(Hold $hold, CheckoutService $svc)
     {
-        abort_unless($hold->user_id === auth()->id() || auth()->user()->can('borrow.return'), 403);
+        abort_unless($hold->user_id === auth()->id() || auth()->user()->can('checkout.manage'), 403);
         $svc->cancelHold($hold);
         return back()->with('toast', 'Hold dibatalkan.');
     }

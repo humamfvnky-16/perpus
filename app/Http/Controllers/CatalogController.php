@@ -19,7 +19,7 @@ class CatalogController extends Controller
             ->when($r->language, fn($q) => $q->where('language', $r->language))
             ->orderBy(match ($r->sort) {
                 'newest'  => 'created_at',
-                'popular' => 'borrow_count',
+                'popular' => 'view_count',
                 default   => 'title',
             }, $r->sort === 'title' || $r->sort === null ? 'asc' : 'desc')
             ->paginate(24)->withQueryString();

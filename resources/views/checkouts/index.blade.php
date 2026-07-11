@@ -7,7 +7,7 @@
     'title' => 'Checkout Buku Fisik',
     'desc'  => 'Kelola transaksi checkout buku fisik di reading spot.',
     'actions' => [
-        ['url' => route('checkouts.create'), 'label' => 'Checkout Baru', 'class' => 'btn-primary', 'icon' => 'fa-plus', 'can' => 'borrow.create'],
+        ['url' => route('checkouts.create'), 'label' => 'Checkout Baru', 'class' => 'btn-primary', 'icon' => 'fa-plus', 'can' => 'checkout.create'],
     ],
 ])
 
