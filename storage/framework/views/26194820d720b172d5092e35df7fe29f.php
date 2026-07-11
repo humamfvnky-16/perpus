@@ -44,6 +44,43 @@
         <p class="text-sm whitespace-pre-line text-slate-600 dark:text-slate-300"><?php echo e($book->synopsis); ?></p>
         <?php endif; ?>
 
+        <?php
+            $formatIcons = ['pdf'=>'fa-file-pdf','epub'=>'fa-book-open','docx'=>'fa-file-word','pptx'=>'fa-file-powerpoint','audio'=>'fa-file-audio','video'=>'fa-file-video'];
+        ?>
+        <h3 class="font-semibold mt-6 mb-2 text-slate-800 dark:text-slate-100 flex items-center justify-between">
+            <span>File Digital</span>
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ebook.manage')): ?>
+                <a href="<?php echo e(route('ebooks.create', ['book_id' => $book->id])); ?>" class="text-xs text-primary-600 hover:underline"><i class="fas fa-plus"></i> Tambah File</a>
+            <?php endif; ?>
+        </h3>
+        <div class="space-y-2 mb-2">
+            <?php $__empty_1 = true; $__currentLoopData = $book->ebooks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $eb): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <div class="flex items-center justify-between gap-3 rounded-xl ring-1 ring-slate-100 dark:ring-slate-700 p-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas <?php echo e($formatIcons[$eb->format] ?? 'fa-file'); ?> text-primary-600 text-lg shrink-0"></i>
+                        <div class="min-w-0">
+                            <p class="font-medium text-sm truncate"><?php echo e($eb->title); ?></p>
+                            <p class="text-xs text-slate-500 uppercase"><?php echo e($eb->format); ?> · <?php echo e($eb->view_count); ?> pembaca</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <a href="<?php echo e(route('ebooks.read', $eb)); ?>" class="btn-primary !px-3 !py-1.5 text-xs"><i class="fas fa-book-open"></i> Baca</a>
+                        <?php if($eb->downloadable): ?>
+                        <a href="<?php echo e(route('ebooks.download', $eb)); ?>" class="btn-secondary !px-3 !py-1.5 text-xs"><i class="fas fa-download"></i> Unduh</a>
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ebook.manage')): ?>
+                        <a href="<?php echo e(route('ebooks.edit', $eb)); ?>" class="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-slate-700 text-primary-600" title="Edit"><i class="fas fa-pen"></i></a>
+                        <form action="<?php echo e(route('ebooks.destroy', $eb)); ?>" method="POST" onsubmit="return confirm('Hapus file ini?')"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                            <button class="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-slate-700 text-red-600" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </form>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <p class="text-sm text-slate-500 dark:text-slate-400"><i class="fas fa-inbox"></i> Belum ada file digital untuk buku ini.</p>
+            <?php endif; ?>
+        </div>
+
         <h3 class="font-semibold mt-6 mb-2 text-slate-800 dark:text-slate-100">Ulasan</h3>
         <?php if(auth()->guard()->check()): ?>
         <form method="POST" action="<?php echo e(route('reviews.store', $book)); ?>" class="mb-4 space-y-2"><?php echo csrf_field(); ?>

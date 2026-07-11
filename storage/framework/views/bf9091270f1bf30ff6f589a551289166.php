@@ -16,7 +16,7 @@
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input name="q" value="<?php echo e(request('q')); ?>" placeholder="Cari judul/ISBN..." class="form-input pl-10">
         </div>
-        <select name="status" class="form-input md:col-span-3">
+        <select name="status" class="form-select md:col-span-3">
             <option value="">Semua status</option>
             <?php $__currentLoopData = ['available','borrowed','reserved','maintenance','lost']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><option value="<?php echo e($s); ?>" <?php if(request('status')===$s): echo 'selected'; endif; ?>><?php echo e($s); ?></option><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>

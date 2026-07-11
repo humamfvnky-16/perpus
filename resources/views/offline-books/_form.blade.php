@@ -61,13 +61,13 @@
     @endif
     <div class="md:col-span-2">
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Penulis (Ctrl/Cmd untuk multi)</label>
-        <select name="authors[]" multiple class="form-select mt-1 h-28">
+        <select name="authors[]" multiple class="form-select mt-1 h-36">
             @foreach($authors as $a)<option value="{{ $a->id }}" @selected(isset($book) && $book->authors->contains($a->id))>{{ $a->name }}</option>@endforeach
         </select>
     </div>
     <div class="md:col-span-2">
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Kategori</label>
-        <select name="categories[]" multiple class="form-select mt-1 h-24">
+        <select name="categories[]" multiple class="form-select mt-1 h-32">
             @foreach($categories as $c)<option value="{{ $c->id }}" @selected(isset($book) && $book->categories->contains($c->id))>{{ $c->name }}</option>@endforeach
         </select>
     </div>

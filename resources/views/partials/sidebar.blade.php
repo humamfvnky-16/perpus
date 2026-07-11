@@ -34,7 +34,6 @@
                 'Koleksi' => [
                     ['route' => 'books.index',         'label' => 'Buku Digital',  'icon' => 'fas fa-tablet-screen-button', 'perm' => 'book.view'],
                     ['route' => 'offline-books.index', 'label' => 'Buku Fisik',    'icon' => 'fas fa-book',                 'perm' => 'book.view'],
-                    ['route' => 'ebooks.index',        'label' => 'E-Book Reader', 'icon' => 'fas fa-book-bookmark',        'perm' => 'ebook.view'],
                 ],
                 'Sirkulasi' => [
                     ['route' => 'members.index',       'label' => 'Anggota',         'icon' => 'fas fa-users',          'perm' => 'member.view'],

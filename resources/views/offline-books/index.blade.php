@@ -17,7 +17,7 @@
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input name="q" value="{{ request('q') }}" placeholder="Cari judul/ISBN..." class="form-input pl-10">
         </div>
-        <select name="reading_spot" class="form-input md:col-span-4">
+        <select name="reading_spot" class="form-select md:col-span-4">
             <option value="">Semua Reading Spot</option>
             @foreach($spots as $s)<option value="{{ $s->id }}" @selected(request('reading_spot')==$s->id)>{{ $s->name }}</option>@endforeach
         </select>

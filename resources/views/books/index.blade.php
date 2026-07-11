@@ -17,7 +17,7 @@
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input name="q" value="{{ request('q') }}" placeholder="Cari judul/ISBN..." class="form-input pl-10">
         </div>
-        <select name="status" class="form-input md:col-span-3">
+        <select name="status" class="form-select md:col-span-3">
             <option value="">Semua status</option>
             @foreach(['available','borrowed','reserved','maintenance','lost'] as $s)<option value="{{ $s }}" @selected(request('status')===$s)>{{ $s }}</option>@endforeach
         </select>

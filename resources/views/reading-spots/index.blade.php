@@ -16,7 +16,7 @@
         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input name="q" value="{{ request('q') }}" placeholder="Nama spot..." class="form-input pl-10">
     </div>
-    <select name="type" class="form-input">
+    <select name="type" class="form-select">
         <option value="">Semua tipe</option>
         @foreach([
             'school'=>'Sekolah',

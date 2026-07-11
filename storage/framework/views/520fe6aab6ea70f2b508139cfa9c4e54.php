@@ -47,7 +47,7 @@
     </div>
     <div class="md:col-span-2">
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Penulis (Ctrl/Cmd untuk multi)</label>
-        <select name="authors[]" multiple class="form-select mt-1 h-28">
+        <select name="authors[]" multiple class="form-select mt-1 h-36">
             <?php $__currentLoopData = $authors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $a): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><option value="<?php echo e($a->id); ?>" <?php if(isset($book) && $book->authors->contains($a->id)): echo 'selected'; endif; ?>><?php echo e($a->name); ?></option><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </select>
     </div>

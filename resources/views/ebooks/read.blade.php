@@ -8,7 +8,7 @@
         </div>
         <h1 class="text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100 truncate">{{ $ebook->title }}</h1>
     </div>
-    <a href="{{ route('ebooks.index') }}" class="btn-secondary shrink-0"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <a href="{{ route('books.show', $ebook->book_id) }}" class="btn-secondary shrink-0"><i class="fas fa-arrow-left"></i> Kembali</a>
 </div>
 <div class="card p-2 md:p-4">
     @if($ebook->format === 'pdf')

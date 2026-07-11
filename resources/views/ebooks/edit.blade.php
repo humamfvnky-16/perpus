@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title','Edit E-Book')
+@section('title','Edit File Digital')
 @section('content')
 @include('partials.page-header', [
     'icon'  => 'fa-pen',
-    'title' => 'Edit E-Book',
-    'desc'  => 'Perbarui data e-book: '.$ebook->title,
+    'title' => 'Edit File Digital',
+    'desc'  => 'Perbarui data file digital: '.$ebook->title,
     'actions' => [
-        ['url' => route('ebooks.index'), 'label' => 'Kembali', 'class' => 'btn-secondary', 'icon' => 'fa-arrow-left'],
+        ['url' => route('books.show', $ebook->book_id), 'label' => 'Kembali', 'class' => 'btn-secondary', 'icon' => 'fa-arrow-left'],
     ],
 ])
 
@@ -34,7 +34,7 @@
     </label>
     <div class="md:col-span-2 flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
         <button class="btn-primary"><i class="fas fa-floppy-disk"></i> Simpan</button>
-        <a href="{{ route('ebooks.index') }}" class="btn-secondary">Batal</a>
+        <a href="{{ route('books.show', $ebook->book_id) }}" class="btn-secondary">Batal</a>
     </div>
 </form>
 @endsection

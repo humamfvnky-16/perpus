@@ -135,9 +135,8 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::post('reviews/{review}/report',[ReviewController::class, 'report'])->name('reviews.report');
     });
 
-    // E-Book reader (semua user login, akses dicek per item)
+    // E-Book reader (dibuka dari halaman Buku Digital, akses dicek per item)
     Route::prefix('ebooks')->name('ebooks.')->group(function () {
-        Route::get('/',                       [EbookController::class, 'index'])->name('index');
         Route::get('/{ebook}/read',           [EbookController::class, 'read'])->name('read');
         Route::post('/{ebook}/bookmark',      [EbookController::class, 'bookmark'])->name('bookmark');
         Route::get('/{ebook}/download',       [EbookController::class, 'download'])->name('download');
@@ -195,9 +194,9 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::post('run',[\App\Http\Controllers\DatacenterSyncController::class, 'run'])->name('run');
     });
 
-    // E-Book management (upload/edit) — terpisah dari reader
+    // E-Book management (upload/edit) — file digital dilampirkan ke sebuah Buku Digital,
+    // dikelola dari halaman detail buku (books.show), bukan menu terpisah.
     Route::middleware('permission:ebook.manage')->group(function () {
-        Route::get('ebooks/manage',              [EbookController::class, 'manage'])->name('ebooks.manage');
         Route::get('ebooks/create',              [EbookController::class, 'create'])->name('ebooks.create');
         Route::post('ebooks',                    [EbookController::class, 'store'])->name('ebooks.store');
         Route::get('ebooks/{ebook}/edit',        [EbookController::class, 'edit'])->name('ebooks.edit');

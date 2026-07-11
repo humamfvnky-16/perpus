@@ -29,11 +29,11 @@
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input name="q" value="{{ request('q') }}" placeholder="Cari judul, ISBN, atau penulis..." class="form-input pl-10">
         </div>
-        <select name="category" class="form-input md:col-span-3">
+        <select name="category" class="form-select md:col-span-3">
             <option value="">Semua Kategori</option>
             @foreach($categories as $c)<option value="{{ $c->id }}" @selected(request('category')==$c->id)>{{ $c->name }}</option>@endforeach
         </select>
-        <select name="sort" class="form-input md:col-span-2">
+        <select name="sort" class="form-select md:col-span-2">
             <option value="title">A-Z</option>
             <option value="newest" @selected(request('sort')==='newest')>Terbaru</option>
             <option value="popular" @selected(request('sort')==='popular')>Populer</option>
