@@ -76,8 +76,8 @@
 </div>
 
 @if($readingSpot->latitude && $readingSpot->longitude)
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}">
+<script src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const map = L.map('spot-detail-map').setView([{{ $readingSpot->latitude }}, {{ $readingSpot->longitude }}], 15);

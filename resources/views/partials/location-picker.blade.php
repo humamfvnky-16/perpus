@@ -25,8 +25,8 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}">
+<script src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
 <script>
     function locationPicker(initLat, initLng) {
         return {

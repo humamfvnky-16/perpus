@@ -46,7 +46,7 @@
         <input type="number" name="pages" value="{{ old('pages', $book->pages ?? '') }}" class="form-input mt-1">
     </div>
     <div class="md:col-span-2">
-        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Penulis (Ctrl/Cmd untuk multi)</label>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Penulis (Ctrl untuk multi)</label>
         <select name="authors[]" multiple class="form-select mt-1 h-36">
             @foreach($authors as $a)<option value="{{ $a->id }}" @selected(isset($book) && $book->authors->contains($a->id))>{{ $a->name }}</option>@endforeach
         </select>
@@ -66,7 +66,7 @@
 
     @if(!isset($book))
     <div class="md:col-span-2 form-section">
-        <h3 class="form-section-title"><i class="fas fa-cloud-arrow-up"></i> File Buku Digital (opsional)</h3>
+        <h3 class="form-section-title"><i class="fas fa-cloud-arrow-up"></i> File Buku Digital </h3>
         <p class="form-hint mb-3">Unggah file agar buku ini langsung bisa dibaca online. Bisa juga ditambahkan/diedit belakangan dari halaman detail buku.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">

@@ -47,7 +47,7 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="{{ asset('vendor/qrcodejs/qrcode.min.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         new QRCode(document.getElementById('qrcode'), {

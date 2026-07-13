@@ -6,6 +6,8 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@fontsource/plus-jakarta-sans": "^5.2.8",
+        "@fontsource/sora": "^5.2.8",
         "@tailwindcss/forms": "^0.5.7",
         "@tailwindcss/typography": "^0.5.13",
         "alpinejs": "^3.13.5",

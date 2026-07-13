@@ -435,8 +435,8 @@
     </footer>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="<?php echo e(asset('vendor/leaflet/dist/leaflet.css')); ?>">
+<script src="<?php echo e(asset('vendor/leaflet/dist/leaflet.js')); ?>"></script>
 <script>
     function readingSpotLocator(spots) {
         return {
