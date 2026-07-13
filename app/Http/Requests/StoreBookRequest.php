@@ -29,6 +29,10 @@ class StoreBookRequest extends FormRequest
             'keywords'         => ['nullable','string','max:255'],
             'authors'          => ['nullable','array'],
             'authors.*'        => ['integer','exists:authors,id'],
+            'ebook_format'       => ['nullable','required_with:ebook_file','in:pdf,epub,docx,pptx,audio,video'],
+            'ebook_file'         => ['nullable','required_with:ebook_format','file','max:102400'],
+            'ebook_access'       => ['nullable','in:public,member,staff'],
+            'ebook_downloadable' => ['nullable','boolean'],
         ];
     }
 }

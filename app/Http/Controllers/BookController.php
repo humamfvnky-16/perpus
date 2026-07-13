@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Imports\BooksImport;
 use App\Models\Book;
+use App\Models\Ebook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -38,9 +39,22 @@ class BookController extends Controller
         $data['qr_code']   = 'QR-' . Str::random(10);
         if ($r->hasFile('cover')) $data['cover'] = $r->file('cover')->store('books', 'public');
         $authors = $data['authors'] ?? [];
-        unset($data['authors']);
+        unset($data['authors'], $data['ebook_format'], $data['ebook_access'], $data['ebook_downloadable']);
         $book = Book::create($data);
         if ($authors) $book->authors()->sync($authors);
+
+        if ($r->hasFile('ebook_file')) {
+            Ebook::create([
+                'book_id'      => $book->id,
+                'title'        => $book->title,
+                'format'       => $r->input('ebook_format'),
+                'file_path'    => $r->file('ebook_file')->store('ebooks', 'public'),
+                'file_size'    => $r->file('ebook_file')->getSize(),
+                'downloadable' => $r->boolean('ebook_downloadable'),
+                'access'       => $r->input('ebook_access', 'member'),
+            ]);
+        }
+
         return redirect()->route('books.show', $book)->with('toast', 'Buku berhasil ditambahkan.');
     }
 
