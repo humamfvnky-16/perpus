@@ -94,6 +94,10 @@
 
 <script src="{{ asset('vendor/html5-qrcode/html5-qrcode.min.js') }}"></script>
 <script>
+    // Template URL lewat route() supaya tetap benar walau aplikasi di-deploy di subfolder
+    // (mis. domain.com/perpus/...) — jangan hardcode path absolut seperti "/holds/...".
+    const confirmScanUrlTemplate = @json(route('holds.confirmScan', ['hold' => '__HOLD_ID__']));
+
     function holdScanner() {
         return {
             manualCode: '',
@@ -156,7 +160,7 @@
                 if (!this.result) return;
                 this.confirming = true;
                 try {
-                    const res = await fetch(`/holds/${this.result.id}/confirm-scan`, {
+                    const res = await fetch(confirmScanUrlTemplate.replace('__HOLD_ID__', this.result.id), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
