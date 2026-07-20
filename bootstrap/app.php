@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'audit'      => \App\Http\Middleware\AuditLog::class,
             '2fa'        => \PragmaRX\Google2FALaravel\Middleware::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackVisitor::class,
+        ]);
         $middleware->throttleApi();
         $middleware->statefulApi();
     })

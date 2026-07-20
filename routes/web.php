@@ -242,6 +242,9 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
         Route::get('audit-logs',          [\App\Http\Controllers\AuditLogController::class, 'index'])->name('audit.index');
         Route::get('activity-logs',       [\App\Http\Controllers\AuditLogController::class, 'activity'])->name('activity.index');
 
+        // Riwayat pengunjung
+        Route::get('visitor-logs',        [\App\Http\Controllers\VisitorLogController::class, 'index'])->name('visitors.index');
+
         // Backup & restore
         Route::prefix('backups')->name('backups.')->group(function () {
             Route::get('/',                [\App\Http\Controllers\BackupController::class, 'index'])->name('index');
