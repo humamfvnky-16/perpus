@@ -61,6 +61,16 @@
             <p class="text-xs font-semibold uppercase tracking-wide opacity-90 mt-2">Akun Baru Hari Ini</p>
             <p class="text-2xl font-bold mt-1"><?php echo e(number_format($newAccountsToday)); ?></p>
         </div>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('report.view')): ?>
+        <a href="<?php echo e(route('visitors.index')); ?>" class="rounded-2xl p-4 text-white shadow-soft bg-gradient-to-br from-sky-400 to-sky-600 block hover:opacity-90 transition">
+            <i class="fas fa-user-clock text-xl opacity-90"></i>
+            <p class="text-xs font-semibold uppercase tracking-wide opacity-90 mt-2">Riwayat Pengunjung</p>
+            <p class="text-xs mt-1 leading-snug">
+                <?php echo e(number_format($visitorsToday)); ?> hari ini<br>
+                <?php echo e(number_format($visitorsMonth)); ?> bulan ini
+            </p>
+        </a>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -9,7 +9,7 @@ use Throwable;
 
 class TrackVisitor
 {
-    protected array $except = ['up', 'favicon.ico', 'robots.txt'];
+    protected array $except = ['up', 'favicon.ico', 'robots.txt', 'histori', 'histori/*', 'visitor-logs', 'visitor-logs/*'];
 
     public function handle(Request $request, Closure $next)
     {

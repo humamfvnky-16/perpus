@@ -17,8 +17,13 @@
             <a href="/" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-home"></i> Beranda</a>
             <a href="{{ route('catalog.index') }}" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-compass"></i> Katalog</a>
             <a href="/#spots" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-location-dot"></i> Lokasi</a>
+            <a href="{{ route('visitors.history') }}" class="hover:opacity-80 flex items-center gap-1"><i class="fas fa-clock-rotate-left"></i> Histori</a>
         </nav>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
+            <div class="hidden lg:flex items-center gap-1.5 text-xs bg-white/10 px-3 py-1.5 rounded-lg">
+                <i class="fas fa-users"></i>
+                <span>Pengunjung Bulan Ini : <b>{{ number_format(\App\Models\VisitorLog::monthCount()) }}</b>, Hari Ini : <b>{{ number_format(\App\Models\VisitorLog::todayCount()) }}</b></span>
+            </div>
             @auth
                 <a href="{{ route('dashboard') }}" class="btn-accent">
                     <i class="fas fa-gauge-high"></i> Dashboard

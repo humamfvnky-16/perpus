@@ -43,6 +43,13 @@ Route::prefix('katalog')->name('catalog.')->group(function () {
     Route::get('/{book}',    [CatalogController::class, 'show'])->name('show');
 });
 
+// Histori kunjungan — publik, siapa pun bisa melihat trafik pengunjung situs
+Route::prefix('histori')->name('visitors.')->group(function () {
+    Route::get('/',        [\App\Http\Controllers\VisitorLogController::class, 'history'])->name('history');
+    Route::get('/{date}',  [\App\Http\Controllers\VisitorLogController::class, 'historyDay'])
+        ->where('date', '\d{4}-\d{2}-\d{2}')->name('history.show');
+});
+
 // Healthcheck (untuk monitoring)
 Route::get('/up', fn () => response()->json(['status' => 'ok', 'time' => now()->toIso8601String()]));
 
@@ -244,6 +251,7 @@ Route::middleware(['auth', 'verified', 'audit'])->group(function () {
 
         // Riwayat pengunjung
         Route::get('visitor-logs',        [\App\Http\Controllers\VisitorLogController::class, 'index'])->name('visitors.index');
+        Route::get('visitor-logs/export', [\App\Http\Controllers\VisitorLogController::class, 'export'])->name('visitors.export');
 
         // Backup & restore
         Route::prefix('backups')->name('backups.')->group(function () {

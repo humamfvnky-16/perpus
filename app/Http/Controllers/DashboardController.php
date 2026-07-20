@@ -11,6 +11,7 @@ use App\Models\Fine;
 use App\Models\Member;
 use App\Models\OfflineBook;
 use App\Models\ReadingSpot;
+use App\Models\VisitorLog;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -40,8 +41,11 @@ class DashboardController extends Controller
         $recent = Checkout::with(['user','offlineBookCopies.offlineBook'])
             ->latest()->take(10)->get();
 
+        $visitorsToday = VisitorLog::todayCount();
+        $visitorsMonth = VisitorLog::monthCount();
+
         return view('dashboard.index', array_merge(
-            compact('stats', 'chart', 'popular', 'activeMembers', 'recent'),
+            compact('stats', 'chart', 'popular', 'activeMembers', 'recent', 'visitorsToday', 'visitorsMonth'),
             $this->activitySummary()
         ));
     }

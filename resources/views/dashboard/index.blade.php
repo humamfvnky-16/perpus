@@ -62,6 +62,16 @@
             <p class="text-xs font-semibold uppercase tracking-wide opacity-90 mt-2">Akun Baru Hari Ini</p>
             <p class="text-2xl font-bold mt-1">{{ number_format($newAccountsToday) }}</p>
         </div>
+        @can('report.view')
+        <a href="{{ route('visitors.index') }}" class="rounded-2xl p-4 text-white shadow-soft bg-gradient-to-br from-sky-400 to-sky-600 block hover:opacity-90 transition">
+            <i class="fas fa-user-clock text-xl opacity-90"></i>
+            <p class="text-xs font-semibold uppercase tracking-wide opacity-90 mt-2">Riwayat Pengunjung</p>
+            <p class="text-xs mt-1 leading-snug">
+                {{ number_format($visitorsToday) }} hari ini<br>
+                {{ number_format($visitorsMonth) }} bulan ini
+            </p>
+        </a>
+        @endcan
     </div>
 </div>
 
